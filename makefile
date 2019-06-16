@@ -11,7 +11,7 @@ LIBS=-lm
 _DEPS = mainheader.h randomgen.h adattipusok.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o szomszed.o torus.o konzolra.o feltoltes.o kimenet.o
+_OBJ = main.o szomszed.o torus.o konzolra.o feltoltes.o kimenet.o eszkozok.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 _OBJ2 = test.o function.o feltoltes.o konzolra.o szomszed.o torus.o bitmuveletek.o statisztika.o save.o kimenet.o metab.o load.o
@@ -43,4 +43,4 @@ wall: $(OBJ)
 .PHONY: run
 run: 
 	rm -f ./OUT/testrun/*.*
-	./mcrs 10 0 0 0.2 0.2 0.2 testrun
+	./mcrs 10 100 0 0 0.1 0.2 0.2 0.2 testrun

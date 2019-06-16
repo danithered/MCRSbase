@@ -31,36 +31,41 @@ int main(int argc, char *argv[]) {
 	/*gsl_rng * r = gsl_rng_alloc (gsl_rng_mt19937);
 	gsl_rng_set(r, time(&timer));*/
     
-    //ido kiirasa
-    char idoki[30] = "\0";
-    struct tm *ido;
-    ido = localtime( &timer );
-    sprintf(idoki, "%02d.%02d_%02d.%02d.%02d\0", (*ido).tm_mon, (*ido).tm_mday, (*ido).tm_hour, (*ido).tm_min, (*ido).tm_sec);
-    printf("\nProgram futasa elkezdodott:\n%s\n", idoki);
+	//ido kiirasa
+	char idoki[30] = "\0";
+	struct tm *ido;
+	ido = localtime( &timer );
+	sprintf(idoki, "%02d.%02d_%02d.%02d.%02d\0", (*ido).tm_mon, (*ido).tm_mday, (*ido).tm_hour, (*ido).tm_min, (*ido).tm_sec);
+	printf("\nProgram futasa elkezdodott:\n%s\n", idoki);
     
 	//Argomentumok beolvasasa
-	int argnum=4 + NOEA;
+	int argnum=7 + NOEA;
 	if (argc < argnum) {
 		printf("tul keves argomentum: %d szukseges\n", argnum);
 		return(3);
 	}
 	
-	int ncol=atoi(argv[1]);
-    double met_neigh_meret = atof(argv[2]), repl_neigh_meret = atof(argv[3]);
+	int ncol=atoi(argv[1]), ciklusszam = atoi(argv[2]);
+	double met_neigh_meret = atof(argv[3]), repl_neigh_meret = atof(argv[4]), phalal = atof(argv[5]), claimEmpty = atof(argv[6]);
 	char azon[20] = "\0";
-    strcpy(azon, argv[4 + NOEA]);
+	strcpy(azon, argv[7 + NOEA]);
     
     
-    /* ncol: alapmatrix oszlopainak szama
-     * met_neigh_meret: metabolikus szomszedsag merete
-     * repl_neigh_meret: metabolikus szomszedsag merete
-     * azon: egyedi azonosito
-	 */
-	printf("Argomentumok sikeresen beolvasva:\n%d %f %f %s\n", ncol, met_neigh_meret, repl_neigh_meret, azon);
+	/* ncol: alapmatrix oszlopainak szama
+	* ciklusszam: milyen sokaig fut a program
+	* met_neigh_meret: metabolikus szomszedsag merete
+	* repl_neigh_meret: metabolikus szomszedsag merete
+	* phalal: extinkcio valsege
+	* claimEmpty: az uresen maradas claim-ja
+	* ... EA adatok ...
+	* azon: egyedi azonosito
+	*/
+	
+	printf("Argomentumok sikeresen beolvasva:\n%d %d %f %f %f %f %s\n", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, azon);
     
     
 	//Valtozok deklaralasa
-	int meret=ncol*ncol, ciklus=0, iter=0, cella=0, met_neigh_cellaszam=0, repl_neigh_cellaszam=0;
+	int meret=ncol*ncol, ciklus=0, iter=0, cella=0, met_neigh_cellaszam=0, repl_neigh_cellaszam=0, replikatornum=1, num_repl_neigh=0, nezett=0, sikeres=0;
 	char mappa[30]="OUT/\0", mentesmappa[30]="save\0", fajlnev[50]="\0", kezdet[30]="\0", csvname[50]={0}, cellafajlnev[50]="\0", savetoR[50]="\0", savetoData[50]="\0", savetoE[50]="\0";
 	
 
@@ -71,21 +76,25 @@ int main(int argc, char *argv[]) {
 	 * cella: az epp nezett cella szama
 	 * met_neigh_cellaszam: hany cellabol all a metabolikus szomszedsag
 	 * repl_neigh_cellaszam: hany cellabol all a replikacios szomszedsag
-	 * */
+	 * replikatornum: ??
+	 * num_repl_neigh: ciklusszamlalo, vegigmegy a replikacios szomszedsagon
+	 * nezett: hanyadik cellat nezzuk
+	 * sikeres: kinek sikerult replikalodnia. Ha 0, akkor senkinek (claimEmpty), ha nagyobb, akkor annak a szomszednak
+	 */
 	
 	//Pointerek deklaralasa
 	int *matrix, *met_neigh, *repl_neigh, *dif_neigh;
-    double *claimek, *adatok, *inicEA;
+	double *claimek, *adatok, *inicEA;
 	FILE *output, *fp, *cellak, *rngSave, *dataSave, *enzSave;
 	struct stat st = {0}, stCsv = {0};
 
 
 	/*
-    * matrix: alapmatrix, az van benne milyen replikato tipus:
-    *   0: ures
-    *   1-NOEA: milyen aktivitasu
-    *   -1: parazita
-    * dif_neigh: diffuzios szomszedsag
+	* matrix: alapmatrix, az van benne milyen replikato tipus:
+	*   0: ures
+	*   1-NOEA: milyen aktivitasu
+	*   -1: parazita
+	* dif_neigh: diffuzios szomszedsag
 	* met_neigh: metabolikus szomszédság mátrix
 	* repl_neigh: replikacios szomszédság mátrix
 	*/
@@ -98,7 +107,8 @@ int main(int argc, char *argv[]) {
 	//matrixok lefoglalasa
 	matrix = (int *) calloc(meret, sizeof(int));
 	claimek=(double *) calloc((repl_neigh_cellaszam+1), sizeof(double));
-    inicEA = (double *) calloc(NOEA, sizeof(double));
+	*(claimek) = claimEmpty;
+	inicEA = (double *) calloc(NOEA, sizeof(double));
 	
 	if(!matrix ||!claimek) {
             printf("nem lehet lefoglalni egy matrix-ot(main)\n");
@@ -135,81 +145,65 @@ int main(int argc, char *argv[]) {
 	//Matrixok feltoltese
 	printf("Starting to inicialise matrix with probabilities:\n");
 	for(ciklus=0; ciklus < NOEA; ciklus++){
-        *(inicEA + ciklus) = atof(argv[argnum - NOEA + ciklus]) ;
-        printf(" %f", *(inicEA + ciklus));
-    }
+		*(inicEA + ciklus) = atof(argv[argnum - NOEA + ciklus]) ;
+		printf(" %f", *(inicEA + ciklus));
+	}
 	inicM(matrix, inicEA, NOEA, meret);
 	printf("\nInicialisation closed\n");
     
 	//szomszedsag matrixok feltoltese
 	met_neigh= (int *) metNeighInic(meret, ncol, met_neigh_meret);
 	repl_neigh= (int *) metNeighInic(meret, ncol, repl_neigh_meret);
-    dif_neigh = (int *) difNeighInic(meret, ncol);
+	dif_neigh = (int *) difNeighInic(meret, ncol);
 //	konzolraMatrix(met_neigh, met_neigh_cellaszam, meret);
 //	konzolraMatrix(dif_neigh, 4, meret);
 	
 	
 	//Kimenet
-//  konzolraMatrix(matrix, ncol, ncol);
-    fprintf(output, "");
-    fajlbaMatrix(matrix, ncol, ncol, output);
+//  	konzolraMatrix(matrix, ncol, ncol);
+	fprintf(output, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal");
+	for(iter=0; iter < NOEA; iter++) {
+		fprintf(output, " inicEA%d", iter+1);
+	}
+	fprintf(output, "\n%d %d %g %g %g", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal);
+	for(iter=0; iter < NOEA; iter++) {
+		fprintf(output, " %g", *(inicEA+iter) );
+	}
 	
-
-/*	
+	fprintf(output, "\n#0\n");
+	fajlbaMatrix(matrix, ncol, ncol, output);
+	
+	
 	//Iteracio
-	for(ciklus=0; ciklus<ciklusszam && replikator_num; ciklus++) {
-		diffuzio_szam=0;
+	for(ciklus=0; ciklus < ciklusszam && replikatornum; ciklus++) {
+		//diffuzio_szam=0;
 		//REPLIKACIOS LEPES
-		for(iter=0; iter<meret; iter++) {
+		for(iter=0; iter < meret; iter++) {
 			cella=gsl_rng_uniform_int(r, meret);
-			if ((*(matrix+cella)).k != 0) { //ha van benne vmi
-				if(gsl_rng_uniform(r) < phalal) extinkcio(matrix, enzim, enzakt_num, cella); //meghal
+			if (*(matrix+cella) != 0) { //ha van benne vmi
+				if(gsl_rng_uniform(r) < phalal) *(matrix+cella) = 0; //meghal
 			}
 			else { //ha nincs benne semmi
-				*(claimek+0)=claimEmpty;
-				claimSum=claimEmpty;
 				for (num_repl_neigh=1; num_repl_neigh<repl_neigh_cellaszam; num_repl_neigh++) {
 					nezett= *(repl_neigh+cella*repl_neigh_cellaszam+num_repl_neigh);
-					knezett=((*(matrix+nezett)).k);
-					if (knezett) {
-						*(claimek+num_repl_neigh) = (metabolizmus(matrix, enzim, met_neigh, met_neigh_cellaszam, enzakt_num, reciprocEnzakt_num, nezett) * knezett);
-						claimSum+= *(claimek+num_repl_neigh);
-						//*(claimek+num_repl_neigh);
-						//metabolizmus(matrix, enzim, met_neigh, met_neigh_cellaszam, enzakt_num, 13);
-						//double xx= metabolizmus(matrix, enzim, met_neigh, met_neigh_cellaszam, enzakt_num, 13);
+					if (*(matrix+nezett) > 0) { //ha van benne metabolikus replikator
+						*(claimek+num_repl_neigh) = (metabolizmus(matrix, enzim, met_neigh, met_neigh_cellaszam, enzakt_num, reciprocEnzakt_num, nezett) * knezett) + *(claimek + num_repl_neigh - 1);
 //						printf("\n%g", *(claimek+num_repl_neigh));
 //						printf("\nreciprocenzakt_num=%g", reciprocEnzakt_num);
 					}
-					else *(claimek+num_repl_neigh) = 0;
+					else *(claimek+num_repl_neigh) = *(claimek + num_repl_neigh - 1);
 				}
 //				printf("\nClaimSum= %g", claimSum);
 //				printf("\nnezett cella: %d", cella);
-				valaszto= gsl_rng_uniform_pos(r);
-				templat=-2; //ha ilyet latsz, akkor nagy baj van...
-				claimJelolt=0;
-				for (num_repl_neigh=0; num_repl_neigh<repl_neigh_cellaszam; num_repl_neigh++) {
-					if(*(claimek+num_repl_neigh)) {claimJelolt += *(claimek+num_repl_neigh)/claimSum;}
-//					printf("\nclaim jelolt (%d): %g", (*(matrix+*(repl_neigh+cella*repl_neigh_cellaszam+num_repl_neigh))).szerk, claimJelolt);
-					if (claimJelolt > valaszto) {
-					  if (num_repl_neigh==0) templat=-1; //ha ures marad
-					  else templat=*(repl_neigh+cella*repl_neigh_cellaszam+num_repl_neigh);
-					  break;
-					}
-				}
-//				printf("\ntemplat: %d\tclaimJelolt=%g\tvalaszto=%g", templat, claimJelolt, valaszto);
+				//valaszto= gsl_rng_uniform_pos(r);
 				
-				//REPLIKACIO!!!!//
-				if(templat > -1) { //ha van masolando templat
-					if(replikacio(matrix, enzim, enzakt_num, spec_limit, templat, cella)) {
-						printf("gaz van a replikacional");
-						return (2); 
-					}
-//					printf("\n\nreplikacio: %d -> %d", templat, cella);
-					//MUTACIO!!!//
-					if (pMutacio > gsl_rng_uniform_pos(r)) {
-						MUTACIO (matrix, enzim, enzakt_num, sd, cella, emax, tradeoffEE, reciprocTradeoffEE, tradeoffEK, reciprocTradeoffEK, kmax, kmin, spec_limit);
-					}
+				sikeres = torottpalca(claimek, repl_neigh_cellaszam, gsl_rng_uniform_pos(r));
+				if( sikeres ) {
+					*(matrix + cella) = *(matrix + *(repl_neigh + cella*repl_neigh_cellaszam + sikeres));
 				}
+				
+//				printf("\ntemplat: %d\ttipusa: %d, random= %g", *(repl_neigh + cella*repl_neigh_cellaszam + sikeres), *(matrix + *(repl_neigh + cella*repl_neigh_cellaszam + sikeres)), valaszto);
+				
 			}
 			//DIFFUZIO
 			for(diffuzio_szam+=diffuzioGyak; diffuzio_szam>=1; diffuzio_szam--) {
@@ -243,7 +237,7 @@ int main(int argc, char *argv[]) {
 //		konzolraMatrixD(enzim, enzakt_num, meret);
 //		printf("\n");
 	}
-*/	
+	
 	
 //	konzolraMatrixStruct(matrix, meret);
 // 	printf("\nenzimakt:\n");

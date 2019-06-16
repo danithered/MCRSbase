@@ -19,6 +19,9 @@ int* difNeighInic(int meret_f, int ncol_f);
 //torus.c
 int torus(int, int);
 
+//eszkozok.c
+int torottpalca(double *values, int noChoices, double random);
+
 //bitmuveletek.c
 int olvas (int, int);
 int ir (int, int, int);
