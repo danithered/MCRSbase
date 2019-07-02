@@ -24,31 +24,25 @@ int diffTM (int *matrix_f, int diffmatrix_f, int numcol_f, int target_f) {
    * saveD_f: az elso cella ertekeit menti el double ertekkent
    */
 	
+	//1. pozicio lementese
+	save_f = (*(matrix_f + target_f));
+
 	//Random irany
 	if ((gsl_rng_uniform(r) < 0.5)) {
-        
-        
-        //1. pozicio lementese
-        saveD_f = (*(matrix_f + target_f));
-        *(saveD_f+1)=(double) (*(matrix_f+target_f)).szerk;
-        *(saveD_f+2)=(double) (*(matrix_f+target_f)).spec;
-        for (enzakt_f=0; enzakt_f<enzaktszam_f;enzakt_f++) {
-            *(saveD_f+3+enzakt_f)= *(enzim_f+target_f*enzaktszam_f+enzakt_f);
-        }
-        
-        //poziciok csereje
-        for(csereszam_f=0; csereszam_f<3; csereszam_f++) {
-            copypaste(matrix_f, enzim_f, enzaktszam_f, *(negyzet_f+csereszam_f+1), *(negyzet_f+csereszam_f+0));
-        }
-        
-        //mentes vissza
-        (*(matrix_f+(*(negyzet_f+3)))).k = *(saveD_f+0);
-        (*(matrix_f+(*(negyzet_f+3)))).szerk = (int) *(saveD_f+1);
-        (*(matrix_f+(*(negyzet_f+3)))).spec = (int) *(saveD_f+2);
-        for (enzakt_f=0; enzakt_f<enzaktszam_f;enzakt_f++) {
-            *(enzim_f+(*(negyzet_f+3))*enzaktszam_f+enzakt_f) = *(saveD_f+3+enzakt_f);
-        }
-    }
+		//poziciok csereje
+		for(csereszam_f=0; csereszam_f<3; csereszam_f++) {
+			*(matrix_f + *(diffmatrix_f + target_f + csereszam_f) );
+			copypaste(matrix_f, enzim_f, enzaktszam_f, *(negyzet_f+csereszam_f+1), *(negyzet_f+csereszam_f+0));
+		}
+		
+		//mentes vissza
+		(*(matrix_f+(*(negyzet_f+3)))).k = *(saveD_f+0);
+		(*(matrix_f+(*(negyzet_f+3)))).szerk = (int) *(saveD_f+1);
+		(*(matrix_f+(*(negyzet_f+3)))).spec = (int) *(saveD_f+2);
+		for (enzakt_f=0; enzakt_f<enzaktszam_f;enzakt_f++) {
+			*(enzim_f+(*(negyzet_f+3))*enzaktszam_f+enzakt_f) = *(saveD_f+3+enzakt_f);
+		}
+	}
 	free(negyzet_f);
 	free(saveD_f);
 	return(0);
