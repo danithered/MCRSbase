@@ -35,5 +35,9 @@ double szorasD (int, double, double);
 
 //kimenet.c
 void fajlbaMatrix(int *matrix_f, int ncol_f, int nrow_f, FILE *out_f);
+int atlagadatok(int *matrix_f, int meret_f, int noEa_f, int ciklus_f, FILE *fajl_f);
 
 //save.c
+
+//diffuzio.c
+int diffTM (int *matrix_f, int *diffmatrix_f, int target_f);

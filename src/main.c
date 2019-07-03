@@ -39,16 +39,16 @@ int main(int argc, char *argv[]) {
 	printf("\nProgram futasa elkezdodott:\n%s\n", idoki);
     
 	//Argomentumok beolvasasa
-	int argnum=8 + NOEA;
+	int argnum = 9 + NOEA;
 	if (argc < argnum) {
 		printf("tul keves argomentum: %d szukseges\n", argnum);
 		return(3);
 	}
 	
-	int ncol=atoi(argv[1]), ciklusszam = atoi(argv[2]);
+	int ncol=atoi(argv[1]), ciklusszam = atoi(argv[2]), mintavetel_gyak = atoi(argv[8]);
 	double met_neigh_meret = atof(argv[3]), repl_neigh_meret = atof(argv[4]), phalal = atof(argv[5]), claimEmpty = atof(argv[6]), diffuzioGyak = atof(argv[7]);
 	char azon[20] = "\0";
-	strcpy(azon, argv[8 + NOEA]);
+	strcpy(azon, argv[9 + NOEA]);
     
     
 	/* ncol: alapmatrix oszlopainak szama
@@ -58,11 +58,12 @@ int main(int argc, char *argv[]) {
 	* phalal: extinkcio valsege
 	* claimEmpty: az uresen maradas claim-ja
     * diffuzioGyak: milyen gyakran kovetekzik be diff esemeny
+    * mintavetel_gyak: milyen gyakran irjon ki atlagadatokat: 0 soha, 1 minden generacioban, 2 minden 2. generacioban
 	* ... EA adatok ...
 	* azon: egyedi azonosito
 	*/
 	
-	printf("Argomentumok sikeresen beolvasva:\n%d %d %f %f %f %f %f %s\n", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, azon);
+	printf("Argomentumok sikeresen beolvasva:\n%d %d %f %f %f %f %f %d %s\n", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, azon);
     
     
 	//Valtozok deklaralasa
@@ -163,11 +164,11 @@ int main(int argc, char *argv[]) {
 	
 	//Kimenet
 //  	konzolraMatrix(matrix, ncol, ncol);
-	fprintf(output, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak");
+	fprintf(output, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak");
 	for(iter=0; iter < NOEA; iter++) {
 		fprintf(output, " inicEA%d", iter+1);
 	}
-	fprintf(output, "\n%d %d %g %g %g", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak);
+	fprintf(output, "\n%d %d %g %g %g %g %g %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak);
 	for(iter=0; iter < NOEA; iter++) {
 		fprintf(output, " %g", *(inicEA+iter) );
 	}
@@ -209,20 +210,19 @@ int main(int argc, char *argv[]) {
 			}
 			//DIFFUZIO
 			for(diffuzio_szam += diffuzioGyak; diffuzio_szam>=1; diffuzio_szam--) {
-				cella=gsl_rng_uniform_int(r, meret);
-//				konzolraMatrix(matrix, ncol, ncol);
-				diffTM (matrix, enzim, enzakt_num, ncol, cella);
+//				printf("diffuzio in ciklus %d, iter %d\n", ciklus, iter);
+//              konzolraMatrix(matrix, ncol, ncol);
+                diffTM (matrix, dif_neigh, gsl_rng_uniform_int(r, meret));
 //				konzolraMatrix(matrix, ncol, ncol);
 			}
 		}
-//		fclose(fp);
-		//tranzicio
-// 		//for(cella= 0; cella<meret; cella++) transition1(matrix, enzim, enzakt_num, cella);
+		//fclose(fp);
 		
 		//mintavetel
 		if (mintavetel_gyak) {
 			if ((ciklus%mintavetel_gyak)==0) {
 				//fprintf(output, "\nciklusszam:;%d\n", ciklus+1);
+                if( !atlagadatok(matrix, meret, NOEA, ciklus, FILE *fajl_f) ) ; //meghalt
 				tipusadatok(adatok, matrix, enzim, enzakt_num, meret, enztipus_num, sorhossz);
 				replikator_num=0;
 				for (enzakt=0; enzakt<enzakt_num; enzakt++) replikator_num= *(adatok+ enzakt*sorhossz);
