@@ -11,7 +11,7 @@ LIBS=-lm
 _DEPS = mainheader.h randomgen.h adattipusok.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o szomszed.o torus.o konzolra.o feltoltes.o kimenet.o eszkozok.o
+_OBJ = main.o szomszed.o torus.o konzolra.o feltoltes.o kimenet.o eszkozok.o metab.o diffuzio.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 _OBJ2 = test.o function.o feltoltes.o konzolra.o szomszed.o torus.o bitmuveletek.o statisztika.o save.o kimenet.o metab.o load.o

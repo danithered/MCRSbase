@@ -76,6 +76,8 @@ int main(int argc, char *argv[]) {
 	double reciprocEnzakt_num = (double) 1/(double)NOEA ;
 	char mappa[30]="OUT/\0", mentesmappa[30]="save\0", fajlnev[50]="\0", mfajlnev[50]="\0", kezdet[30]="\0", csvname[50]={0}, cellafajlnev[50]="\0", savetoR[50]="\0", savetoData[50]="\0", savetoE[50]="\0";
 	
+	double knezett=1;
+	
 
 	/*
 	 * meret= ncol*nrow, az alapmatrix cellaszama
@@ -247,7 +249,7 @@ int main(int argc, char *argv[]) {
 		if (mintavetel_gyak && ((ciklus%mintavetel_gyak)==0)) {
 //			fprintf(output, "\nciklusszam:;%d\n", ciklus+1);
 			replikatornum = atlagadatok(matrix, meret, NOEA, ciklus, output);
-			if(!replikator_num) printf("\na rendszer meghalt (%d .ciklus)\n", ciklus);
+			if(!replikatornum) printf("\na rendszer meghalt (%d .ciklus)\n", ciklus);
 		}
 		if (matrixkiiratas_gyak && ((ciklus%matrixkiiratas_gyak)==0)) {
 			fprintf(moutput, "\n#%d\n", cella);
@@ -260,7 +262,7 @@ int main(int argc, char *argv[]) {
 	//mintavetel - ha nem volt utolso ciklusban
 	if (mintavetel_gyak && ((ciklus%mintavetel_gyak) != 0)) {
 		replikatornum = atlagadatok(matrix, meret, NOEA, ciklus, output);
-		if(!replikator_num) printf("\na rendszer meghalt (%d .ciklus)\n", ciklus);
+		if(!replikatornum) printf("\na rendszer meghalt (%d .ciklus)\n", ciklus);
 	}
 	if (matrixkiiratas_gyak && ((ciklus%matrixkiiratas_gyak) != 0)) {
 		fprintf(moutput, "\n#%d\n", cella);

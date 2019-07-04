@@ -23,7 +23,7 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
 		nezett_f = *(met_szomszedsag_f+cella_f*szomsz_cellaszam_f+szomszed_f);
 		if ( (*(matrix_f+nezett_f)) > 0 ) {
 		  //*(enzimsum_f+(*(matrix_f+nezett_f)).k) = *(enzim_f+nezett_f*enzimaktszam_f+(*(matrix_f+nezett_f)).k);
-		  *(enzimsum_f + *(matrix_f+nezett_f) - 1)++ ;
+		  (*(enzimsum_f + *(matrix_f+nezett_f) - 1))++ ;
 //  		printf("\nnezett=%d\tdominans=%d", nezett_f, dominans_f);
 //  		printf(" (%d, %d, %g)", (*(matrix_f+nezett_f)).szerk, (*(matrix_f+nezett_f)).spec, *(enzim_f+nezett_f*enzimaktszam_f+dominans_f));
         }
@@ -35,7 +35,7 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
     }
 	
 	//Metabolic function - there is no zero!
-	switch(method_f)
+	switch(method_f) {
 		case 1:
 			metab_f =1;
 			for(enzakt_f=0; enzakt_f<enzimaktszam_f; enzakt_f++){
@@ -58,6 +58,7 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
 			}
 			metab_f = 1 / metab_f;
 			break;
+	}
 	
 	free (enzimsum_f);
 //	printf("\nvegso metab_f=%g", metab_f);
