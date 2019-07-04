@@ -42,3 +42,6 @@ int atlagadatok(int *matrix_f, int meret_f, int noEa_f, int ciklus_f, FILE *fajl
 
 //diffuzio.c
 int diffTM (int *matrix_f, int *diffmatrix_f, int target_f);
+
+//metab.c
+double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szomsz_cellaszam_f, int enzimaktszam_f, double reciprocEnzimaktszam_f, int cella_f);

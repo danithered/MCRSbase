@@ -39,16 +39,16 @@ int main(int argc, char *argv[]) {
 	printf("\nProgram futasa elkezdodott:\n%s\n", idoki);
     
 	//Argomentumok beolvasasa
-	int argnum = 10 + NOEA;
+	int argnum = 11 + NOEA;
 	if (argc < argnum) {
 		printf("tul keves argomentum: %d szukseges\n", argnum);
 		return(3);
 	}
 	
-	int ncol=atoi(argv[1]), ciklusszam = atoi(argv[2]), mintavetel_gyak = atoi(argv[8]), matrixkiiratas_gyak = atoi(argv[9]);
+	int ncol=atoi(argv[1]), ciklusszam = atoi(argv[2]), mintavetel_gyak = atoi(argv[8]), matrixkiiratas_gyak = atoi(argv[9]), modszer = atoi(argv[10]);
 	double met_neigh_meret = atof(argv[3]), repl_neigh_meret = atof(argv[4]), phalal = atof(argv[5]), claimEmpty = atof(argv[6]), diffuzioGyak = atof(argv[7]);
 	char azon[20] = "\0";
-	strcpy(azon, argv[10 + NOEA]);
+	strcpy(azon, argv[11 + NOEA]);
     
     
 	/* ncol: alapmatrix oszlopainak szama
@@ -60,15 +60,20 @@ int main(int argc, char *argv[]) {
 	* diffuzioGyak: milyen gyakran kovetekzik be diff esemeny
 	* mintavetel_gyak: milyen gyakran irjon ki atlagadatokat: 0 soha, 1 minden generacioban, 2 minden 2. generacioban
 	* matrixkiiratas_gyak: milyen gyakran irja ki a teljes matrixot
+	* modszer: melyik fuggvennyel szamitsa ki a metabolizmus hatekonysagat
+	* 	1: klasszikus, mertani atlag
+	* 	2: minimum (by Gergo)
+	* 	3: reciproc osszegek reciproca (by Sz Andras)
 	* ... EA adatok ...
 	* azon: egyedi azonosito
 	*/
 	
-	printf("Argomentumok sikeresen beolvasva:\n%d %d %f %f %f %f %f %d %d %s\n", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, azon);
+	printf("Argomentumok sikeresen beolvasva:\n%d %d %f %f %f %f %f %d %d %d %s\n", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer, azon);
     
     
 	//Valtozok deklaralasa
 	int meret=ncol*ncol, ciklus=0, iter=0, cella=0, met_neigh_cellaszam=0, repl_neigh_cellaszam=0, replikatornum=1, num_repl_neigh=0, nezett=0, sikeres=0, diffuzio_szam=0;
+	double reciprocEnzakt_num = (double) 1/(double)NOEA ;
 	char mappa[30]="OUT/\0", mentesmappa[30]="save\0", fajlnev[50]="\0", mfajlnev[50]="\0", kezdet[30]="\0", csvname[50]={0}, cellafajlnev[50]="\0", savetoR[50]="\0", savetoData[50]="\0", savetoE[50]="\0";
 	
 
@@ -83,7 +88,8 @@ int main(int argc, char *argv[]) {
 	 * num_repl_neigh: ciklusszamlalo, vegigmegy a replikacios szomszedsagon
 	 * nezett: hanyadik cellat nezzuk
 	 * sikeres: kinek sikerult replikalodnia. Ha 0, akkor senkinek (claimEmpty), ha nagyobb, akkor annak a szomszednak
-	 * diffuzio_szam: diffuziohoz szamlalo. Ha >0, akkor diffuzio tortenik.	
+	 * diffuzio_szam: diffuziohoz szamlalo. Ha >0, akkor diffuzio tortenik.
+	 * reciprocEnzakt_num: az enzimaktivitasok szamanak reciproka
 	 * fajlnev: atlagadatok ebbe
 	 * mfajlnev: ebbe mennek matrixok
 	 */
@@ -173,14 +179,14 @@ int main(int argc, char *argv[]) {
 	
 	//Kimenet
 //  	konzolraMatrix(matrix, ncol, ncol);
-	fprintf(output, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak, matrixkiiratas_gyak");
-	fprintf(moutput, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak, matrixkiiratas_gyak");
+	fprintf(output, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer");
+	fprintf(moutput, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer");
 	for(iter=0; iter < NOEA; iter++) {
 		fprintf(output, " inicEA%d", iter+1);
 		fprintf(moutput, " inicEA%d", iter+1);
 	}
-	fprintf(output, "\n%d %d %g %g %g %g %g %d %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak);
-	fprintf(moutput, "\n%d %d %g %g %g %g %g %d %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak);
+	fprintf(output, "\n%d %d %g %g %g %g %g %d %d %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer);
+	fprintf(moutput, "\n%d %d %g %g %g %g %g %d %d %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer);
 	for(iter=0; iter < NOEA; iter++) {
 		fprintf(output, " %g", *(inicEA+iter) );
 		fprintf(moutput, " %g", *(inicEA+iter) );
@@ -207,7 +213,9 @@ int main(int argc, char *argv[]) {
 				for (num_repl_neigh=1; num_repl_neigh<repl_neigh_cellaszam; num_repl_neigh++) {
 					nezett= *(repl_neigh+cella*repl_neigh_cellaszam+num_repl_neigh);
 					if (*(matrix+nezett) > 0) { //ha van benne metabolikus replikator
-						*(claimek+num_repl_neigh) = (metabolizmus(matrix, enzim, met_neigh, met_neigh_cellaszam, enzakt_num, reciprocEnzakt_num, nezett) * knezett) + *(claimek + num_repl_neigh - 1);
+						
+						*(claimek+num_repl_neigh) = (metabolizmus(matrix, met_neigh, modszer, met_neigh_cellaszam, NOEA, reciprocEnzakt_num, nezett) * knezett) + *(claimek + num_repl_neigh - 1); // A kumulalt ertekeket szamitja ki!
+						
 //						printf("\n%g", *(claimek+num_repl_neigh));
 //						printf("\nreciprocenzakt_num=%g", reciprocEnzakt_num);
 					}
