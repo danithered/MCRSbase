@@ -39,16 +39,16 @@ int main(int argc, char *argv[]) {
 	printf("\nProgram futasa elkezdodott:\n%s\n", idoki);
     
 	//Argomentumok beolvasasa
-	int argnum = 9 + NOEA;
+	int argnum = 10 + NOEA;
 	if (argc < argnum) {
 		printf("tul keves argomentum: %d szukseges\n", argnum);
 		return(3);
 	}
 	
-	int ncol=atoi(argv[1]), ciklusszam = atoi(argv[2]), mintavetel_gyak = atoi(argv[8]);
+	int ncol=atoi(argv[1]), ciklusszam = atoi(argv[2]), mintavetel_gyak = atoi(argv[8]), matrixkiiratas_gyak = atoi(argv[9]);
 	double met_neigh_meret = atof(argv[3]), repl_neigh_meret = atof(argv[4]), phalal = atof(argv[5]), claimEmpty = atof(argv[6]), diffuzioGyak = atof(argv[7]);
 	char azon[20] = "\0";
-	strcpy(azon, argv[9 + NOEA]);
+	strcpy(azon, argv[10 + NOEA]);
     
     
 	/* ncol: alapmatrix oszlopainak szama
@@ -57,18 +57,19 @@ int main(int argc, char *argv[]) {
 	* repl_neigh_meret: metabolikus szomszedsag merete
 	* phalal: extinkcio valsege
 	* claimEmpty: az uresen maradas claim-ja
-    * diffuzioGyak: milyen gyakran kovetekzik be diff esemeny
-    * mintavetel_gyak: milyen gyakran irjon ki atlagadatokat: 0 soha, 1 minden generacioban, 2 minden 2. generacioban
+	* diffuzioGyak: milyen gyakran kovetekzik be diff esemeny
+	* mintavetel_gyak: milyen gyakran irjon ki atlagadatokat: 0 soha, 1 minden generacioban, 2 minden 2. generacioban
+	* matrixkiiratas_gyak: milyen gyakran irja ki a teljes matrixot
 	* ... EA adatok ...
 	* azon: egyedi azonosito
 	*/
 	
-	printf("Argomentumok sikeresen beolvasva:\n%d %d %f %f %f %f %f %d %s\n", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, azon);
+	printf("Argomentumok sikeresen beolvasva:\n%d %d %f %f %f %f %f %d %d %s\n", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, azon);
     
     
 	//Valtozok deklaralasa
 	int meret=ncol*ncol, ciklus=0, iter=0, cella=0, met_neigh_cellaszam=0, repl_neigh_cellaszam=0, replikatornum=1, num_repl_neigh=0, nezett=0, sikeres=0, diffuzio_szam=0;
-	char mappa[30]="OUT/\0", mentesmappa[30]="save\0", fajlnev[50]="\0", kezdet[30]="\0", csvname[50]={0}, cellafajlnev[50]="\0", savetoR[50]="\0", savetoData[50]="\0", savetoE[50]="\0";
+	char mappa[30]="OUT/\0", mentesmappa[30]="save\0", fajlnev[50]="\0", mfajlnev[50]="\0", kezdet[30]="\0", csvname[50]={0}, cellafajlnev[50]="\0", savetoR[50]="\0", savetoData[50]="\0", savetoE[50]="\0";
 	
 
 	/*
@@ -82,13 +83,15 @@ int main(int argc, char *argv[]) {
 	 * num_repl_neigh: ciklusszamlalo, vegigmegy a replikacios szomszedsagon
 	 * nezett: hanyadik cellat nezzuk
 	 * sikeres: kinek sikerult replikalodnia. Ha 0, akkor senkinek (claimEmpty), ha nagyobb, akkor annak a szomszednak
-     * diffuzio_szam: diffuziohoz szamlalo. Ha >0, akkor diffuzio tortenik.
+	 * diffuzio_szam: diffuziohoz szamlalo. Ha >0, akkor diffuzio tortenik.	
+	 * fajlnev: atlagadatok ebbe
+	 * mfajlnev: ebbe mennek matrixok
 	 */
 	
 	//Pointerek deklaralasa
 	int *matrix, *met_neigh, *repl_neigh, *dif_neigh;
 	double *claimek, *adatok, *inicEA;
-	FILE *output, *fp, *cellak, *rngSave, *dataSave, *enzSave;
+	FILE *output, *fp, *moutput, *rngSave;
 	struct stat st = {0}, stCsv = {0};
 
 
@@ -123,6 +126,7 @@ int main(int argc, char *argv[]) {
 	strcat(mappa, azon);
 	sprintf(mentesmappa, "%s/%s", mappa, "save");
 	sprintf(fajlnev, "%s/%s.data\0", mappa, azon);
+	sprintf(mfajlnev, "%s/%s_matrix.data\0", mappa, azon);
 	sprintf(savetoR, "%s/saveR%s.bin\0", mentesmappa, azon);
 	
 	//log file kezd
@@ -136,8 +140,13 @@ int main(int argc, char *argv[]) {
 		printf("\n%s ilyen nevu fajl mar van!\n", fajlnev);
 		return(4);
 	}
+	if (stat(mfajlnev, &stCsv) != -1) {
+		printf("\n%s ilyen nevu fajl mar van!\n", mfajlnev);
+		return(4);
+	}
 	
 	output = fopen(fajlnev, "a");
+	moutput = fopen(mfajlnev, "a");
 	rngSave = fopen(savetoR, "a");
 	
 	
@@ -164,21 +173,29 @@ int main(int argc, char *argv[]) {
 	
 	//Kimenet
 //  	konzolraMatrix(matrix, ncol, ncol);
-	fprintf(output, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak");
+	fprintf(output, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak, matrixkiiratas_gyak");
+	fprintf(moutput, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak, matrixkiiratas_gyak");
 	for(iter=0; iter < NOEA; iter++) {
 		fprintf(output, " inicEA%d", iter+1);
+		fprintf(moutput, " inicEA%d", iter+1);
 	}
-	fprintf(output, "\n%d %d %g %g %g %g %g %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak);
+	fprintf(output, "\n%d %d %g %g %g %g %g %d %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak);
+	fprintf(moutput, "\n%d %d %g %g %g %g %g %d %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak);
 	for(iter=0; iter < NOEA; iter++) {
 		fprintf(output, " %g", *(inicEA+iter) );
+		fprintf(moutput, " %g", *(inicEA+iter) );
 	}
 	
-	fprintf(output, "\n#0\n");
-	fajlbaMatrix(matrix, ncol, ncol, output);
+	fprintf(output, "\n");
+	fprintf(moutput, "\n#0\n");
+	
+	replikatornum = atlagadatok(matrix, meret, NOEA, 0, output);
+	
+	fajlbaMatrix(matrix, ncol, ncol, moutput);
 	
 	
 	//Iteracio
-	for(ciklus=0; ciklus < ciklusszam && replikatornum; ciklus++) {
+	for(ciklus=1; ciklus <= ciklusszam && replikatornum; ciklus++) {
 		diffuzio_szam=0;
 		//REPLIKACIOS LEPES
 		for(iter=0; iter < meret; iter++) {
@@ -219,33 +236,28 @@ int main(int argc, char *argv[]) {
 		//fclose(fp);
 		
 		//mintavetel
-		if (mintavetel_gyak) {
-			if ((ciklus%mintavetel_gyak)==0) {
-				//fprintf(output, "\nciklusszam:;%d\n", ciklus+1);
-                if( !atlagadatok(matrix, meret, NOEA, ciklus, FILE *fajl_f) ) ; //meghalt
-				tipusadatok(adatok, matrix, enzim, enzakt_num, meret, enztipus_num, sorhossz);
-				replikator_num=0;
-				for (enzakt=0; enzakt<enzakt_num; enzakt++) replikator_num= *(adatok+ enzakt*sorhossz);
-				if(!replikator_num) printf("\na rendszer meghalt (%d .ciklus)\n", ciklus);
-				kimenetTipusadat (output, matrix, adatok, enztipus_num, sorhossz, ciklus+1);
-			}
+		if (mintavetel_gyak && ((ciklus%mintavetel_gyak)==0)) {
+//			fprintf(output, "\nciklusszam:;%d\n", ciklus+1);
+			replikatornum = atlagadatok(matrix, meret, NOEA, ciklus, output);
+			if(!replikator_num) printf("\na rendszer meghalt (%d .ciklus)\n", ciklus);
 		}
-		if (cellamintavetel_gyak && ((ciklus%cellamintavetel_gyak)==0)) {
-			if(ment==4) writetoBin(matrix, enzim, save, meret, ciklus+1, dataSave, dataSave);
-			else fajlbaCella(cellak, matrix, enzim, enzakt_num, meret, ciklus+1);
+		if (matrixkiiratas_gyak && ((ciklus%matrixkiiratas_gyak)==0)) {
+			fprintf(moutput, "\n#%d\n", cella);
+			fajlbaMatrix(matrix, ncol, ncol, moutput);
 		}
-//		konzolraCella(matrix, enzim, enzakt_num, meret);
-//		konzolraMatrixD(enzim, enzakt_num, meret);
+//		konzolraMatrixD(matrix, ncol, ncol);
 //		printf("\n");
 	}
 	
-	
-//	konzolraMatrixStruct(matrix, meret);
-// 	printf("\nenzimakt:\n");
-//	konzolraMatrixD(enzim, enzakt_num, meret);
-		
-//  	double xxx=metabolizmus(matrix, enzim, met_neigh, met_neigh_cellaszam, enzakt_num, 13);
-// 	printf("\n\n\nM=%g\n", xxx);
+	//mintavetel - ha nem volt utolso ciklusban
+	if (mintavetel_gyak && ((ciklus%mintavetel_gyak) != 0)) {
+		replikatornum = atlagadatok(matrix, meret, NOEA, ciklus, output);
+		if(!replikator_num) printf("\na rendszer meghalt (%d .ciklus)\n", ciklus);
+	}
+	if (matrixkiiratas_gyak && ((ciklus%matrixkiiratas_gyak) != 0)) {
+		fprintf(moutput, "\n#%d\n", cella);
+		fajlbaMatrix(matrix, ncol, ncol, moutput);
+	}
 	
 	//MENTES
 	gsl_rng_fwrite (rngSave, r);
@@ -262,16 +274,14 @@ int main(int argc, char *argv[]) {
 	free(repl_neigh);
 	free(dif_neigh);
 	free(claimek);
-	//free(adatok);
-    free(inicEA);
+	free(inicEA);
 	printf("Matrixok felszabaditva\n");
 
 	fclose(output);
 	fclose(fp);
-	fclose(cellak);
+	fclose(moutput);
 	fclose(rngSave);
-	fclose(dataSave);
-    printf("Fajlok lezarva\n");
+	printf("Fajlok lezarva\n");
 
 		
 	//randomszam generator lezarasa

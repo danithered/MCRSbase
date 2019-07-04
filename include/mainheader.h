@@ -21,6 +21,7 @@ int torus(int, int);
 
 //eszkozok.c
 int torottpalca(double *values, int noChoices, double random);
+double minimum(double *vector_f, int dbszam_f);
 
 //bitmuveletek.c
 int olvas (int, int);
