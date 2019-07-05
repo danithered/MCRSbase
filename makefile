@@ -1,3 +1,4 @@
+PROGINAME = mcrs
 IDIR =./include
 CC=gcc
 CFLAGS=-I$(IDIR) `pkg-config --cflags --libs gsl`
@@ -14,14 +15,14 @@ DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 _OBJ = main.o szomszed.o torus.o konzolra.o feltoltes.o kimenet.o eszkozok.o metab.o diffuzio.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-_OBJ2 = test.o function.o feltoltes.o konzolra.o szomszed.o torus.o bitmuveletek.o statisztika.o save.o kimenet.o metab.o load.o
+_OBJ2 = test.o
 OBJ2 = $(patsubst %,$(ODIR)/%,$(_OBJ2))
 
 
 $(ODIR)/%.o: $(SRCDIR)/%.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-mcrs: $(OBJ)
+$(PROGINAME): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 	
@@ -38,9 +39,9 @@ test: $(OBJ2)
 	
 .PHONY: wall
 wall: $(OBJ)
-	$(CC) -o progi $^ $(CFLAGS) $(LIBS) -Wall
+	$(CC) -o $(PROGINAME) $^ $(CFLAGS) $(LIBS) -Wall
 	
 .PHONY: run
 run: 
 	rm -f ./OUT/testrun/*.*
-	./mcrs 10 100 0 0 0.1 0.1 0 0 0 1 0.3 0.3 0.3 1 1 1.5 testrun
+	./$(PROGINAME) 10 100 0 0 0.1 0.1 0 1 0 1 0.3 0.3 0.3 1 1 1.5 testrun

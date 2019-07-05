@@ -39,10 +39,34 @@ int main(int argc, char *argv[]) {
 	printf("\nProgram futasa elkezdodott:\n%s\n", idoki);
     
 	//Argomentumok beolvasasa
-	int argnum = 11 + 2*NOEA;
+	int argnum = 11 + 2*NOEA, argszamlalo;
+	char *token, *read2, *readfree, read[512]="\0";
+	FILE *infile, *rngSeed;
 	if (argc < argnum) {
 		printf("tul keves argomentum: %d szukseges\n", argnum);
 		return(3);
+	}
+	if(argc > (argnum+1) ) {
+		//argomentumok atirasa
+		printf("megkezdett szimulacio folytatasa\nArgomentumok beolvasasa fajlbol: %s\nGSL random seed beolvasasa fajlbol: %s", argv[argnum + 1], argv[argnum + 2]);
+		infile = fopen(argv[argnum + 1], "r");
+		if(!infile) printf("%s fajl beolvasasa nem sikerult!\n", argv[argnum + 1]);
+		fgets(read, 256, infile);
+		fgets(read, 256, infile);
+		readfree = read2 = strdup(read);
+		for(argszamlalo=1; ((token = strsep(&read2, " "))); argszamlalo++ ) {
+			strcpy(argv[argszamlalo], token);
+		}
+		free(readfree);
+		printf("Argomentumok beolvasasa sikelrult.\nRNG Seed beolvasasa folzamatban...\n");
+		
+		//rng seed
+		rngSeed = fopen(argv[argnum + 2], "rb");
+		if(!infile) printf("%s fajl beolvasasa nem sikerult!\n", argv[argnum + 2]);
+		if( !betoltesRng(rngSeed) ) {
+			printf("RNG Seed betoltese sikerult\n");
+		}
+		free(rngSeed);
 	}
 	
 	int ncol=atoi(argv[1]), ciklusszam = atoi(argv[2]), mintavetel_gyak = atoi(argv[8]), matrixkiiratas_gyak = atoi(argv[9]), modszer = atoi(argv[10]);
@@ -51,16 +75,16 @@ int main(int argc, char *argv[]) {
 	strcpy(azon, argv[11 + 2*NOEA]);
     
     
-	/* ncol: alapmatrix oszlopainak szama
-	* ciklusszam: milyen sokaig fut a program
-	* met_neigh_meret: metabolikus szomszedsag merete
-	* repl_neigh_meret: metabolikus szomszedsag merete
-	* phalal: extinkcio valsege
-	* claimEmpty: az uresen maradas claim-ja
-	* diffuzioGyak: milyen gyakran kovetekzik be diff esemeny
-	* mintavetel_gyak: milyen gyakran irjon ki atlagadatokat: 0 soha, 1 minden generacioban, 2 minden 2. generacioban
-	* matrixkiiratas_gyak: milyen gyakran irja ki a teljes matrixot
-	* modszer: melyik fuggvennyel szamitsa ki a metabolizmus hatekonysagat
+	/* 1: ncol: alapmatrix oszlopainak szama
+	* 2: ciklusszam: milyen sokaig fut a program
+	* 3: met_neigh_meret: metabolikus szomszedsag merete
+	* 4: repl_neigh_meret: metabolikus szomszedsag merete
+	* 5: phalal: extinkcio valsege
+	* 6: claimEmpty: az uresen maradas claim-ja
+	* 7: diffuzioGyak: milyen gyakran kovetekzik be diff esemeny
+	* 8: mintavetel_gyak: milyen gyakran irjon ki atlagadatokat: 0 soha, 1 minden generacioban, 2 minden 2. generacioban
+	* 9: matrixkiiratas_gyak: milyen gyakran irja ki a teljes matrixot
+	* 10: modszer: melyik fuggvennyel szamitsa ki a metabolizmus hatekonysagat
 	* 	1: klasszikus, mertani atlag
 	* 	2: minimum (by Gergo)
 	* 	3: reciproc osszegek reciproca (by Sz Andras)
@@ -101,7 +125,7 @@ int main(int argc, char *argv[]) {
 	//Pointerek deklaralasa
 	int *matrix, *met_neigh, *repl_neigh, *dif_neigh;
 	double *claimek, *adatok, *inicEA, *kvalues;
-	FILE *output, *fp, *moutput, *rngSave;
+	FILE *output, *fp, *moutput;
 	struct stat st = {0}, stCsv = {0};
 
 
@@ -138,7 +162,6 @@ int main(int argc, char *argv[]) {
 	sprintf(mentesmappa, "%s/%s", mappa, "save");
 	sprintf(fajlnev, "%s/%s.data\0", mappa, azon);
 	sprintf(mfajlnev, "%s/%s_matrix.data\0", mappa, azon);
-	sprintf(savetoR, "%s/saveR%s.bin\0", mentesmappa, azon);
 	
 	//log file kezd
 	if (stat(mappa, &st) == -1) mkdir(mappa, 7777);
@@ -158,7 +181,6 @@ int main(int argc, char *argv[]) {
 	
 	output = fopen(fajlnev, "a");
 	moutput = fopen(mfajlnev, "a");
-	rngSave = fopen(savetoR, "a");
 	
 	
 	/******************************
@@ -207,15 +229,20 @@ int main(int argc, char *argv[]) {
 		fprintf(moutput, " %g", *(kvalues+iter) );
 	}
 	
-	kvalues--; //elobbre leptettem (nulladik pozicio innentol az elso), hogy kesobb a kvalues+matrix ertekeknel ne kelljen mindig "-1"-et beirni
-	
-	fprintf(output, "\n");
-	fprintf(moutput, "\n#0\n");
+	fprintf(output, " %s\n", azon);
+	fprintf(moutput, " %s\n#0\n", azon);
 	
 	replikatornum = atlagadatok(matrix, meret, NOEA, 0, output);
 	
-	fajlbaMatrix(matrix, ncol, ncol, moutput);
+	fajlbaMatrix(matrix, ncol, ncol, moutput); //elso allapot elmentese
 	
+	//Rng seed mentese
+	sprintf(savetoR, "%s/saveR_%s_%d.bin\0", mentesmappa, azon, 0);
+	mentesRng(savetoR);
+	
+	
+	//egyeb kezdes elotti teendok
+	kvalues--; //elobbre leptettem (nulladik pozicio innentol az elso), hogy kesobb a kvalues+matrix ertekeknel ne kelljen mindig "-1"-et beirni
 	
 	//Iteracio
 	for(ciklus=1; ciklus <= ciklusszam && replikatornum; ciklus++) {
@@ -267,8 +294,10 @@ int main(int argc, char *argv[]) {
 			if(!replikatornum) printf("\na rendszer meghalt (%d .ciklus)\n", ciklus);
 		}
 		if (matrixkiiratas_gyak && ((ciklus%matrixkiiratas_gyak)==0)) {
-			fprintf(moutput, "\n#%d\n", cella);
+			fprintf(moutput, "\n#%d\n", ciklus);
 			fajlbaMatrix(matrix, ncol, ncol, moutput);
+			sprintf(savetoR, "%s/saveR%s_%d.bin\0", mentesmappa, azon, ciklus);
+			mentesRng(savetoR);
 		}
 //		konzolraMatrixD(matrix, ncol, ncol);
 //		printf("\n");
@@ -280,13 +309,12 @@ int main(int argc, char *argv[]) {
 		if(!replikatornum) printf("\na rendszer meghalt (%d .ciklus)\n", ciklus);
 	}
 	if (matrixkiiratas_gyak && ((ciklus%matrixkiiratas_gyak) != 0)) {
-		fprintf(moutput, "\n#%d\n", cella);
+		fprintf(moutput, "\n#%d\n", ciklus);
 		fajlbaMatrix(matrix, ncol, ncol, moutput);
+		sprintf(savetoR, "%s/saveR%s_%d.bin\0", mentesmappa, azon, ciklus);
+		mentesRng(savetoR);
 	}
 	
-	//MENTES
-	gsl_rng_fwrite (rngSave, r);
-		
 	time(&timer);
 	printf("\nSimulation %s stopped at %s\n", azon, ctime( &timer ));
 	
@@ -304,9 +332,8 @@ int main(int argc, char *argv[]) {
 	printf("Matrixok felszabaditva\n");
 
 	fclose(output);
-	fclose(fp);
+	//fclose(fp);
 	fclose(moutput);
-	fclose(rngSave);
 	printf("Fajlok lezarva\n");
 
 		

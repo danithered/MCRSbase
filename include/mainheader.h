@@ -22,17 +22,19 @@ int torus(int, int);
 //eszkozok.c
 int torottpalca(double *values, int noChoices, double random);
 double minimum(double *vector_f, int dbszam_f);
+int betoltesRng(FILE *rngLoad_s);
+int mentesRng(char *filename_f);
 
 //bitmuveletek.c
-int olvas (int, int);
-int ir (int, int, int);
-int kiirbit (int, int);
+//int olvas (int, int);
+//int ir (int, int, int);
+//int kiirbit (int, int);
 
 //statisztika.c
-int alatt (int, int);
-int faktorialis (int);
-int hanyfajta (int);
-double szorasD (int, double, double);
+//int alatt (int, int);
+//int faktorialis (int);
+//int hanyfajta (int);
+//double szorasD (int, double, double);
 
 //kimenet.c
 void fajlbaMatrix(int *matrix_f, int ncol_f, int nrow_f, FILE *out_f);

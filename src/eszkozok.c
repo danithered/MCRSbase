@@ -1,4 +1,6 @@
 #include <randomgen.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 int torottpalcaProb(double *props, int noChoices, double random) {
 	/* torott palca kumulalt bemeneti ertekekkel
@@ -51,3 +53,29 @@ double minimum(double *vector_f, int dbszam_f) {
 	}
 	return(lokalismin_f);
 }
+
+int betoltesRng(FILE *rngLoad_s) {
+	r = (gsl_rng *) gsl_rng_alloc (gsl_rng_mt19937);
+	gsl_rng_fread (rngLoad_s, r);
+  
+	return(0);
+}
+
+int mentesRng(char *filename_f) {
+	FILE *rngSave_f;
+	struct stat st = {0}, stCsv = {0};
+	
+	if (stat(filename_f, &stCsv) != -1) {
+		printf("\n%s ilyen nevu fajl mar van!\n", filename_f);
+		return(4);
+	}
+	rngSave_f = fopen(filename_f, "a");
+	
+	gsl_rng_fwrite (rngSave_f, r);
+	
+	fclose(rngSave_f);
+	
+	return(0);
+
+}
+
