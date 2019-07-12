@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 	printf("\nProgram futasa elkezdodott:\n%s\n", idoki);
     
 	//Argomentumok beolvasasa
-	int argnum = 11 + 2*NOEA, argszamlalo;
+	int argnum = 11 + 2*(NOEA+1), argszamlalo;
 	char *token, *read2, *readfree, read[512]="\0";
 	FILE *infile, *rngSeed;
 	if (argc < argnum) {
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 	int ncol=atoi(argv[1]), ciklusszam = atoi(argv[2]), mintavetel_gyak = atoi(argv[8]), matrixkiiratas_gyak = atoi(argv[9]), modszer = atoi(argv[10]);
 	double met_neigh_meret = atof(argv[3]), repl_neigh_meret = atof(argv[4]), phalal = atof(argv[5]), claimEmpty = atof(argv[6]), diffuzioGyak = atof(argv[7]);
 	char azon[20] = "\0";
-	strcpy(azon, argv[11 + 2*NOEA]);
+	strcpy(azon, argv[11 + 2*(NOEA+1)]);
     
     
 	/* 1: ncol: alapmatrix oszlopainak szama
@@ -148,8 +148,8 @@ int main(int argc, char *argv[]) {
 	matrix = (int *) calloc(meret, sizeof(int));
 	claimek=(double *) calloc((repl_neigh_cellaszam+1), sizeof(double));
 	*(claimek) = claimEmpty;
-	inicEA = (double *) calloc(NOEA, sizeof(double));
-	kvalues = (double *) calloc(NOEA, sizeof(double));
+	inicEA = (double *) calloc(NOEA+1, sizeof(double));
+	kvalues = (double *) calloc(NOEA+1, sizeof(double));
 	
 	if(!matrix ||!claimek) {
             printf("nem lehet lefoglalni egy matrix-ot(main)\n");
@@ -189,10 +189,10 @@ int main(int argc, char *argv[]) {
 	
 	//Matrixok feltoltese
 	printf("Starting to inicialise matrix with probabilities (and k values):\n");
-	for(ciklus=0; ciklus < NOEA; ciklus++){
-		*(inicEA + ciklus) = atof(argv[argnum - 2*NOEA + ciklus]) ;
+	for(ciklus=0; ciklus <= NOEA; ciklus++){
+		*(inicEA + ciklus) = atof(argv[argnum - 2*(NOEA+1) + ciklus]) ;
 /**/		printf(" %f", *(inicEA + ciklus));
-		*(kvalues + ciklus) = atof(argv[argnum - NOEA + ciklus]) ;
+		*(kvalues + ciklus) = atof(argv[argnum - NOEA - 1 + ciklus]) ;
 /**/		printf(" (%f)", *(kvalues + ciklus));
 	}
 	inicM(matrix, inicEA, NOEA, meret);
@@ -210,21 +210,21 @@ int main(int argc, char *argv[]) {
 //  	konzolraMatrix(matrix, ncol, ncol);
 	fprintf(output, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer");
 	fprintf(moutput, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer");
-	for(iter=0; iter < NOEA; iter++) {
-		fprintf(output, " inicEA%d", iter+1);
-		fprintf(moutput, " inicEA%d", iter+1);
+	for(iter=0; iter <= NOEA; iter++) {
+		fprintf(output, " inicEA%d", iter?iter:-1 );
+		fprintf(moutput, " inicEA%d", iter?iter:-1 );
 	}
-	for(iter=0; iter < NOEA; iter++) {
-		fprintf(output, " kvalues%d", iter+1);
-		fprintf(moutput, " kvalues%d", iter+1);
+	for(iter=0; iter <= NOEA; iter++) {
+		fprintf(output, " kvalues%d", iter?iter:-1 );
+		fprintf(moutput, " kvalues%d", iter?iter:-1 );
 	}
-	fprintf(output, "\n%d %d %g %g %g %g %g %d %d %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer);
-	fprintf(moutput, "\n%d %d %g %g %g %g %g %d %d %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer);
-	for(iter=0; iter < NOEA; iter++) {
+	fprintf(output, " azon\n%d %d %g %g %g %g %g %d %d %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer);
+	fprintf(moutput, " azon\n%d %d %g %g %g %g %g %d %d %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer);
+	for(iter=0; iter <= NOEA; iter++) {
 		fprintf(output, " %g", *(inicEA+iter) );
 		fprintf(moutput, " %g", *(inicEA+iter) );
 	}
-	for(iter=0; iter < NOEA; iter++) {
+	for(iter=0; iter <= NOEA; iter++) {
 		fprintf(output, " %g", *(kvalues+iter) );
 		fprintf(moutput, " %g", *(kvalues+iter) );
 	}
@@ -242,7 +242,7 @@ int main(int argc, char *argv[]) {
 	
 	
 	//egyeb kezdes elotti teendok
-	kvalues--; //elobbre leptettem (nulladik pozicio innentol az elso), hogy kesobb a kvalues+matrix ertekeknel ne kelljen mindig "-1"-et beirni
+	//kvalues--; //elobbre leptettem (nulladik pozicio innentol az elso), hogy kesobb a kvalues+matrix ertekeknel ne kelljen mindig "-1"-et beirni
 	
 	//Iteracio
 	for(ciklus=1; ciklus <= ciklusszam && replikatornum; ciklus++) {
@@ -254,16 +254,21 @@ int main(int argc, char *argv[]) {
 				if(gsl_rng_uniform(r) < phalal) *(matrix+cella) = 0; //meghal
 			}
 			else { //ha nincs benne semmi
+//				printf("Replication to position %d :\n", cella);
 				for (num_repl_neigh=1; num_repl_neigh<repl_neigh_cellaszam; num_repl_neigh++) {
 					nezett= *(repl_neigh+cella*repl_neigh_cellaszam+num_repl_neigh);
-					if (*(matrix+nezett) > 0) { //ha van benne metabolikus replikator
+					if (*(matrix+nezett) ) { //ha van benne replikator
+//						printf("");
+						*(claimek+num_repl_neigh) = (metabolizmus(matrix, met_neigh, modszer, met_neigh_cellaszam, NOEA, reciprocEnzakt_num, nezett) * ((*(matrix+nezett) > 0)?(*(kvalues + *(matrix+nezett))):(*kvalues) )) + *(claimek + num_repl_neigh - 1); // A kumulalt ertekeket szamitja ki!
 						
-						*(claimek+num_repl_neigh) = (metabolizmus(matrix, met_neigh, modszer, met_neigh_cellaszam, NOEA, reciprocEnzakt_num, nezett) * *(kvalues + *(matrix+nezett)) ) + *(claimek + num_repl_neigh - 1); // A kumulalt ertekeket szamitja ki!
-						
+//						printf("\tcell %d Claim= %g, k= %g, M= %g\n", nezett, *(claimek+num_repl_neigh), (*(matrix+nezett) > 0)?(*(kvalues + *(matrix+nezett))):(*kvalues), metabolizmus(matrix, met_neigh, modszer, met_neigh_cellaszam, NOEA, reciprocEnzakt_num, nezett));
 //						printf("\n%g", *(claimek+num_repl_neigh));
 //						printf("\nreciprocenzakt_num=%g", reciprocEnzakt_num);
 					}
-					else *(claimek+num_repl_neigh) = *(claimek + num_repl_neigh - 1);
+					else {
+						*(claimek+num_repl_neigh) = *(claimek + num_repl_neigh - 1);
+//						printf("\tcell %d: no replicator here, claim: %g\n", nezett, *(claimek+num_repl_neigh));
+					}
 				}
 //				printf("\nClaimSum= %g", claimSum);
 //				printf("\nnezett cella: %d", cella);
@@ -328,7 +333,7 @@ int main(int argc, char *argv[]) {
 	free(dif_neigh);
 	free(claimek);
 	free(inicEA);
-	free(++kvalues);
+	free(kvalues);
 	printf("Matrixok felszabaditva\n");
 
 	fclose(output);

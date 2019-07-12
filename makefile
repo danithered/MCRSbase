@@ -44,4 +44,4 @@ wall: $(OBJ)
 .PHONY: run
 run: 
 	rm -f ./OUT/testrun/*.*
-	./$(PROGINAME) 10 100 0 0 0.1 0.1 0 1 0 1 0.3 0.3 0.3 1 1 1.5 testrun
+	./$(PROGINAME) 10 30 0 0 0.1 0.1 0 1 0 1 0.2 0.15 0.15 0.15 2 1.5 1.5 1.6 testrun
