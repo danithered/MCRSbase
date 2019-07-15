@@ -34,11 +34,18 @@ int torottpalca(double *values, int noChoices, double random) {
 	 * choice: szamlalo, vegigmegy a props-on
 	 * osszeg: az utolso ertek
 	 */
+
+	int choice=0; 
+	double osszeg=0;
 	
-	int choice=0, osszeg=*(values+noChoices);
+//	printf("noChoices= %d\n", noChoices);
+	osszeg = *(values + noChoices - 1);
+//	printf("torottpalca osszeg= %g, noChoices= %d\n", osszeg, noChoices);
 	
 	for (choice = 0; choice < noChoices; choice++) {
+//		printf("torottpalca (%d): %g / %g = %g\n", choice, *(values + choice), osszeg, *(values + choice)/osszeg);
 		if (random < (*(values + choice)/osszeg ) ) {
+//			printf("torottpalca choice: %d; random value= %g, limit: %g\n", choice, random, *(values + choice)/osszeg);
 			return(choice);
 		}
 	}

@@ -15,7 +15,7 @@ void inicM(int *matrix_f, double *inicEA_f, int noEA_f, int meret_f){
     *(inic_f) = *(inicEA_f); //nulladik marad
     for(ea_f = 1; ea_f < (noEA_f+1); ea_f++){
         *(inic_f + ea_f) = *(inicEA_f + ea_f) + *(inic_f + ea_f - 1); //kovetkezok legyenek kumulaltak
-/**/        printf("%f\n", *(inic_f + ea_f));
+//        printf("%f\n", *(inic_f + ea_f));
     }
     if( *(inic_f + noEA_f ) > 1 ) printf("\nWARNING: az iniciacios gyakorisagok osszege nagyobb 1-nel!\n");
     
@@ -24,9 +24,9 @@ void inicM(int *matrix_f, double *inicEA_f, int noEA_f, int meret_f){
         dobott_f = gsl_rng_uniform(r);
         for(ea_f=0; ea_f < (noEA_f+1); ea_f++){
             if(dobott_f < *(inic_f + ea_f) ) {
-                *(matrix_f + cellaszam_f) = ea_f?ea_f:-1;
-/**/                printf("%d pozicioban: random szam = %f, claim = %g, replikator tipusa = %d\n", cellaszam_f, dobott_f, *(inic_f + ea_f), *(matrix_f + cellaszam_f ) );
-                break;
+			*(matrix_f + cellaszam_f) = ea_f?ea_f:-1;
+//			printf("%d pozicioban: random szam = %f, claim = %g, replikator tipusa = %d\n", cellaszam_f, dobott_f, *(inic_f + ea_f), *(matrix_f + cellaszam_f ) );
+			break;
             }
         }
         
