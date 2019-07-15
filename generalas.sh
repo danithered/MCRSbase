@@ -53,7 +53,7 @@ i_1=0.2
 i_2=0.2
 i_3=0.2
 
-echo something >> $direct/$file
+echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer inicEAP inicEA1 inicEA2 inicEA3 kvaluesP kvalues1 kvalues2 kvalues3 >> $direct/$file
 
 #for i in {0..2}
 for kp in ${k_p[@]}
