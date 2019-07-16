@@ -7,7 +7,7 @@
 #include <string.h>
 
 int main(int argc, char *argv[]) { 
-	char *token, *read2, from[50] = "\0", read[256]="\0", argv2[256];
+	/*char *token, *read2, from[50] = "\0", read[256]="\0", argv2[256];
 	FILE *file;
 	int i;
 	
@@ -30,5 +30,14 @@ int main(int argc, char *argv[]) {
 	}
 	
 	//free(argv2);
+	*/
+	
+	
+	int i=0;
+	for(i=1; i<argc; i++) {
+		printf("%s - %s\n", argv[0], argv[i]);
+	}
+	
+	
 	return(0);
 }
