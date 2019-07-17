@@ -1,9 +1,17 @@
 #!/bin/bash
 
-jobnamestart="tr3E2"
 file="param"
 indirect="IN"
 outdirect="OUT"
+
+if [ "$#" -ne 1 ]
+then
+	echo "Give name to simulations!"
+	read -r jobnamestart
+else
+	jobnamestart=$1
+fi
+
 num=$(wc -l < $indirect/$file)
 
 if [ ! -d  $outdirect ]; then

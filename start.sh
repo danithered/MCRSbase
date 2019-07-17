@@ -1,11 +1,19 @@
 #!/bin/bash
 
-jobnamestart="starttest"
 maxnum=4
 file="param"
 indirect="IN"
 outdirect="OUT"
 pids=(0)
+
+
+if [ "$#" -ne 1 ]
+then
+	echo "Give name to simulations!"
+	read -r jobnamestart
+else
+	jobnamestart=$1
+fi
 
 num=$(wc -l < $indirect/$file)
 
@@ -22,7 +30,8 @@ do
 done
 
 #for i in {2..10}
-for i in {2..${num}}
+#for i in {2..${num}}
+for ((i=2; i <= ${num}; i+=1))
 do
 	./mcrs $(sed "${i}q;d" $indirect/$file) ${jobname}_$(( ${i} - 1 )) >> ${jobname}_output_$(( ${i} - 1 )).txt &
 	pid[ $(( i - 2)) ]=$!

@@ -36,22 +36,22 @@ touch $direct/$file
 
 ncol=300
 ciklusszam=50000
-met_neigh_meret=(0 1)
-repl_neigh_meret=(0 1)
-phalal=0.1
-claimEmpty=20.0
-diffuzioGyak=(0 5)
-mintavetel_gyak=10
+met_neigh_meret=1
+repl_neigh_meret=0
+phalal=0.2
+claimEmpty=2.0
+diffuzioGyak=(0 100)
+mintavetel_gyak=1
 matrixkiiratas_gyak=100
 modszer=(1 2 3)
-k_p=2
-k_1=1
-k_2=1
-k_3=1.5
-i_p=0.2
-i_1=0.2
-i_2=0.2
-i_3=0.2
+k_p=8.0
+k_1=2.0
+k_2=4.0
+k_3=6.0
+i_p=0.125
+i_1=0.125
+i_2=0.125
+i_3=0.125
 
 echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer inicEAP inicEA1 inicEA2 inicEA3 kvaluesP kvalues1 kvalues2 kvalues3 >> $direct/$file
 
@@ -84,7 +84,7 @@ do
 												do
 													for i in {1..1}}
 													do
-														echo $ncol $ciklusszam ${m} ${r} $phalal ${c} ${d} $mintavetel_gyak $matrixkiiratas_gyak ${k} ${kp} ${k1} ${k2} ${k3} ${ip} ${i1} ${i2} ${i3} >> $direct/$file
+														echo $ncol $ciklusszam ${m} ${r} $phalal ${c} ${d} $mintavetel_gyak $matrixkiiratas_gyak ${k} ${ip} ${i1} ${i2} ${i3} ${kp} ${k1} ${k2} ${k3} >> $direct/$file
 													done
 												done
 											done
