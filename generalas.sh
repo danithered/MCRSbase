@@ -35,14 +35,14 @@ touch $direct/$file
 
 
 ncol=300
-ciklusszam=50000
+ciklusszam=10000
 met_neigh_meret=1
-repl_neigh_meret=0
+repl_neigh_meret=(0 1 2)
 phalal=0.2
 claimEmpty=2.0
-diffuzioGyak=(0 100)
+diffuzioGyak=(4 100)
 mintavetel_gyak=1
-matrixkiiratas_gyak=100
+matrixkiiratas_gyak=200
 modszer=(1 2 3)
 k_p=8.0
 k_1=2.0

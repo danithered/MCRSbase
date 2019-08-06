@@ -31,7 +31,10 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
 	
     //Check if there is a 0 amongst activities
     for(enzakt_f=0; enzakt_f<enzimaktszam_f; enzakt_f++){
-		if( *(enzimsum_f+enzakt_f) <= 0 ) return(0);
+		if( *(enzimsum_f+enzakt_f) <= 0 ) {
+			free(enzimsum_f);
+			return(0);
+		}
     }
 	
 	//Metabolic function - there is no zero!

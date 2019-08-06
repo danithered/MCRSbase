@@ -46,7 +46,19 @@ int main(int argc, char *argv[]) {
 		printf("tul keves argomentum: %d szukseges\n", argnum);
 		return(3);
 	}
-	if(argc > (argnum+1) ) {
+	
+	if(argc == (argnum+2) ) {
+		// rng seed beolvasasa fajlbol
+		printf("RNG seed beolvasasa %s fajlbol\n", argv[argnum + 1]);
+		rngSeed = fopen(argv[argnum + 1], "rb");
+		if(!infile) printf("%s fajl beolvasasa nem sikerult!\n", argv[argnum + 1]);
+		if( !betoltesRng(rngSeed) ) {
+			printf("RNG Seed betoltese sikerult\n");
+		}
+		fclose(rngSeed);
+	}	
+	
+	if(argc > (argnum+2) ) {
 		//argomentumok atirasa
 		printf("megkezdett szimulacio folytatasa\nArgomentumok beolvasasa fajlbol: %s\nGSL random seed beolvasasa fajlbol: %s", argv[argnum + 1], argv[argnum + 2]);
 		infile = fopen(argv[argnum + 1], "r");
@@ -58,7 +70,7 @@ int main(int argc, char *argv[]) {
 			strcpy(argv[argszamlalo], token);
 		}
 		free(readfree);
-		printf("Argomentumok beolvasasa sikelrult.\nRNG Seed beolvasasa folzamatban...\n");
+		printf("Argomentumok beolvasasa sikerult.\nRNG Seed beolvasasa folyamatban...\n");
 		
 		//rng seed
 		rngSeed = fopen(argv[argnum + 2], "rb");
@@ -66,7 +78,7 @@ int main(int argc, char *argv[]) {
 		if( !betoltesRng(rngSeed) ) {
 			printf("RNG Seed betoltese sikerult\n");
 		}
-		free(rngSeed);
+		fclose(rngSeed);
 	}
 	
 	int ncol=atoi(argv[1]), ciklusszam = atoi(argv[2]), mintavetel_gyak = atoi(argv[8]), matrixkiiratas_gyak = atoi(argv[9]), modszer = atoi(argv[10]);
@@ -298,7 +310,7 @@ int main(int argc, char *argv[]) {
 				diffTM (matrix, dif_neigh, gsl_rng_uniform_int(r, meret));
 //				konzolraMatrix(matrix, ncol, ncol);
 			}
-		}
+		} //iteracios lepes bezar
 		//fclose(fp);
 		
 		//mintavetel
@@ -306,16 +318,18 @@ int main(int argc, char *argv[]) {
 //			fprintf(output, "\nciklusszam:;%d\n", ciklus+1);
 			replikatornum = atlagadatok(matrix, meret, NOEA, ciklus, output);
 			if(!replikatornum) printf("\na rendszer meghalt (%d .ciklus)\n", ciklus);
+			fflush(output);
 		}
 		if (matrixkiiratas_gyak && ((ciklus%matrixkiiratas_gyak)==0)) {
 			fprintf(moutput, "\n#%d\n", ciklus);
 			fajlbaMatrix(matrix, ncol, ncol, moutput);
 			sprintf(savetoR, "%s/saveR%s_%d.bin\0", mentesmappa, azon, ciklus);
 			mentesRng(savetoR);
+			fflush(moutput);
 		}
 //		konzolraMatrixD(matrix, ncol, ncol);
-/**/		printf("\n");
-	}
+//		printf("\n");
+	} //ciklus bezar
 	
 	//mintavetel - ha nem volt utolso ciklusban
 	if (mintavetel_gyak && ((ciklus%mintavetel_gyak) != 0)) {

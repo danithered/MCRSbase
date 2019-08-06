@@ -1,0 +1,22 @@
+---
+title: "grids"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+library(plotrix)
+```
+
+ncol= `r ncol`, met_neigh_meret= `r met_neigh_meret`, repl_neigh_meret= `r repl_neigh_meret`, phalal= `r phalal`, claimEmpty= `r claimEmpty`, diffuzioGyak= `r diffuzioGyak`, modszer= `r modszer`  
+inic gyak: `r inicEApar`, `r inicEA1`, `r inicEA2`, `r inicEA3`   
+k: `r kvaluespar`, `r kvalues1`, `r kvalues2`, `r kvalues3`
+
+```{r fig.show='hold'}
+mentesek <- grep("#", fajl, value = T)
+par(mfrow=c(1,2))
+plotgrid2(fajl, ncol, 0, c("black", "white", "red", "green", "blue"), -1:3)
+plotgrid2(fajl, ncol, as.numeric(substring(mentesek[length(mentesek)], 2)), c("black", "white", "red", "green", "blue"), -1:3)
+par(mfrow=c(1,1))
+```
+

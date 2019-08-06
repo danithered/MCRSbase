@@ -33,7 +33,7 @@ done
 #for i in {2..${num}}
 for ((i=2; i <= ${num}; i+=1))
 do
-	./mcrs $(sed "${i}q;d" $indirect/$file) ${jobname}_$(( ${i} - 1 )) >> ${jobname}_output_$(( ${i} - 1 )).txt &
+	./mcrs $(sed "${i}q;d" $indirect/$file) ${jobname}_$(( ${i} - 1 )) ./IN/rngseed.bin >> ${outdirect}/${jobname}_output_$(( ${i} - 1 )).txt &
 	pid[ $(( i - 2)) ]=$!
 	#echo pid no $(( i - 2)) is ${pid[ $(( i - 2)) ]}
 	#echo pids are ${pid[@]}
