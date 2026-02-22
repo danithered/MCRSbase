@@ -23,6 +23,8 @@ main visszateresi ertekek:
 #define NOEA 3
 
 
+time_t timer;
+gsl_rng * r;
 
 int main(int argc, char *argv[]) {
 	//randomszam generator inicializalasa

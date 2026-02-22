@@ -2,8 +2,8 @@
 #include <gsl/gsl_randist.h>
 #include <time.h>
 
-time_t timer;
-gsl_rng * r;
+extern time_t timer;
+extern gsl_rng * r;
 
 
 /*A main-be a kovetkezo sorokat be kell tenni az elejere es a vegere:*/

@@ -18,18 +18,20 @@ OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 _OBJ2 = test.o
 OBJ2 = $(patsubst %,$(ODIR)/%,$(_OBJ2))
 
-
-$(ODIR)/%.o: $(SRCDIR)/%.c $(DEPS)
+$(ODIR)/%.o: $(SRCDIR)/%.c $(DEPS) | $(ODIR)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(PROGINAME): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
+$(ODIR):
+	mkdir -p $(ODIR)
+
 	
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~  
+	rm -f $(ODIR)/*.o *~ $(PROGINAME) test
 
 .PHONY: test
 	
