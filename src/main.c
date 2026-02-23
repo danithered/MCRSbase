@@ -20,11 +20,12 @@ main visszateresi ertekek:
 #include <sys/types.h>
 #include <string.h>
 
-#define NOEA 3
+unsigned int NOEA = 3;
 
 
 time_t timer;
 gsl_rng * r;
+double *fitness_map;
 
 int main(int argc, char *argv[]) {
 	//randomszam generator inicializalasa
@@ -116,8 +117,7 @@ int main(int argc, char *argv[]) {
 	//Valtozok deklaralasa
 	int meret=ncol*ncol, ciklus=0, iter=0, cella=0, met_neigh_cellaszam=0, repl_neigh_cellaszam=0, replikatornum=1, num_repl_neigh=0, nezett=0, sikeres=0;
 	double reciprocEnzakt_num = (double) 1/(double)NOEA , diffuzio_szam=0.0;
-	char mappa[30]="OUT/\0", mentesmappa[30]="save\0", fajlnev[50]="\0", mfajlnev[50]="\0", kezdet[30]="\0", csvname[50]={0}, cellafajlnev[50]="\0", savetoR[50]="\0", savetoData[50]="\0", savetoE[50]="\0";
-	
+	char mappa[30]="OUT/\0", mentesmappa[30]="save\0", fajlnev[50]="\0", mfajlnev[50]="\0", kezdet[30]="\0", csvname[50]={0}, cellafajlnev[50]="\0", savetoR[50]="\0", savetoData[50]="\0", savetoE[50]="\0";	
 
 	/*
 	 * meret= ncol*nrow, az alapmatrix cellaszama
@@ -171,7 +171,10 @@ int main(int argc, char *argv[]) {
             return(1);
 	}
 
-	
+	if(modszer == 5) {
+		createMapping(&fitness_map, NOEA, met_neigh_cellaszam);
+	}
+
 	//szovegmuveletek
 	strcat(mappa, azon);
 	sprintf(mentesmappa, "%s/%s", mappa, "save");

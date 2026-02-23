@@ -3,6 +3,7 @@
 #define TRANSITION transition3
 
 //#define BITNUMFORMAT %(BITNUM)d
+extern unsigned int NOEA;
 	
 //feltoltes.c
 void inicM(int *matrix_f, double *inicEA_f, int noEA_f, int meret_f);
@@ -21,7 +22,8 @@ int torus(int, int);
 
 //eszkozok.c
 int torottpalca(double *values, int noChoices, double random);
-double minimum(double *vector_f, int dbszam_f);
+unsigned long minimum(unsigned long *vector_f, int dbszam_f);
+double minimumD(double *vector_f, int dbszam_f);
 int betoltesRng(FILE *rngLoad_s);
 int mentesRng(char *filename_f);
 
@@ -47,3 +49,6 @@ int diffTM (int *matrix_f, int *diffmatrix_f, int target_f);
 
 //metab.c
 double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szomsz_cellaszam_f, int enzimaktszam_f, double reciprocEnzimaktszam_f, int cella_f);
+unsigned long long getIndex(unsigned long *eas, unsigned long noEA);
+void createMapping(double **map, int no_ea, int no_neighbours);
+
