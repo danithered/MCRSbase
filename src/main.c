@@ -38,13 +38,13 @@ int main(int argc, char *argv[]) {
 	char idoki[30] = "\0";
 	struct tm *ido;
 	ido = localtime( &timer );
-	sprintf(idoki, "%02d.%02d_%02d.%02d.%02d\0", (*ido).tm_mon, (*ido).tm_mday, (*ido).tm_hour, (*ido).tm_min, (*ido).tm_sec);
+	sprintf(idoki, "%02d.%02d_%02d.%02d.%02d", (*ido).tm_mon, (*ido).tm_mday, (*ido).tm_hour, (*ido).tm_min, (*ido).tm_sec);
 	printf("\nProgram futasa elkezdodott:\n%s\n", idoki);
     
 	//Argomentumok beolvasasa
-	int argnum = 11 + 2*(NOEA+1), argszamlalo;
+	int argnum = 12 + 2*(NOEA+1), argszamlalo;
 	char *token, *read2, *readfree, read[512]="\0";
-	FILE *infile, *rngSeed;
+	FILE *infile = NULL, *rngSeed=NULL;
 	if (argc < argnum) {
 		printf("tul keves argomentum: %d szukseges\n", argnum);
 		return(3);
@@ -87,7 +87,8 @@ int main(int argc, char *argv[]) {
 	int ncol=atoi(argv[1]), ciklusszam = atoi(argv[2]), mintavetel_gyak = atoi(argv[8]), matrixkiiratas_gyak = atoi(argv[9]), modszer = atoi(argv[10]);
 	double met_neigh_meret = atof(argv[3]), repl_neigh_meret = atof(argv[4]), phalal = atof(argv[5]), claimEmpty = atof(argv[6]), diffuzioGyak = atof(argv[7]);
 	char azon[20] = "\0";
-	strcpy(azon, argv[11 + 2*(NOEA+1)]);
+	NOEA = atoi(argv[11]);
+	strcpy(azon, argv[12 + 2*(NOEA+1)]);
     
     
 	/* 1: ncol: alapmatrix oszlopainak szama
@@ -103,6 +104,7 @@ int main(int argc, char *argv[]) {
 	* 	1: klasszikus, mertani atlag
 	* 	2: minimum (by Gergo)
 	* 	3: reciproc osszegek reciproca (by Sz Andras)
+	* 11: NOEA
 	* 
 	* ... EA adatok ...
 	* 	iniciacios gyakorisag
@@ -117,7 +119,10 @@ int main(int argc, char *argv[]) {
 	//Valtozok deklaralasa
 	int meret=ncol*ncol, ciklus=0, iter=0, cella=0, met_neigh_cellaszam=0, repl_neigh_cellaszam=0, replikatornum=1, num_repl_neigh=0, nezett=0, sikeres=0;
 	double reciprocEnzakt_num = (double) 1/(double)NOEA , diffuzio_szam=0.0;
-	char mappa[30]="OUT/\0", mentesmappa[30]="save\0", fajlnev[50]="\0", mfajlnev[50]="\0", kezdet[30]="\0", csvname[50]={0}, cellafajlnev[50]="\0", savetoR[50]="\0", savetoData[50]="\0", savetoE[50]="\0";	
+	char mappa[30]="OUT/\0", mentesmappa[250]="save\0", fajlnev[250]="\0", mfajlnev[250]="\0";
+	//char kezdet[30]="\0";
+	//char csvname[50]={0}, savetoData[50]="\0", savetoE[50]="\0", cellafajlnev[50]="\0"; 
+	char savetoR[500]="\0"; 
 
 	/*
 	 * meret= ncol*nrow, az alapmatrix cellaszama
@@ -138,7 +143,7 @@ int main(int argc, char *argv[]) {
 	
 	//Pointerek deklaralasa
 	int *matrix, *met_neigh, *repl_neigh, *dif_neigh;
-	double *claimek, *adatok, *inicEA, *kvalues;
+	double *claimek, *inicEA, *kvalues;
 	FILE *output, *moutput;
 	struct stat st = {0}, stCsv = {0};
 
@@ -177,9 +182,9 @@ int main(int argc, char *argv[]) {
 
 	//szovegmuveletek
 	strcat(mappa, azon);
-	sprintf(mentesmappa, "%s/%s", mappa, "save");
-	sprintf(fajlnev, "%s/%s.data\0", mappa, azon);
-	sprintf(mfajlnev, "%s/%s_matrix.data\0", mappa, azon);
+	snprintf(mentesmappa, sizeof(mentesmappa), "%s/%s", mappa, "save");
+	snprintf(fajlnev, sizeof(fajlnev), "%s/%s.data", mappa, azon);
+	snprintf(mfajlnev, sizeof(mfajlnev), "%s/%s_matrix.data", mappa, azon);
 	
 	//log file kezd
 	if (stat(mappa, &st) == -1) mkdir(mappa, 7777);
@@ -255,7 +260,7 @@ int main(int argc, char *argv[]) {
 	fajlbaMatrix(matrix, ncol, ncol, moutput); //elso allapot elmentese
 	
 	//Rng seed mentese
-	sprintf(savetoR, "%s/saveR_%s_%d.bin\0", mentesmappa, azon, 0);
+	snprintf(savetoR, sizeof(savetoR), "%s/saveR_%s_%d.bin", mentesmappa, azon, 0);
 	mentesRng(savetoR);
 	
 	
@@ -328,7 +333,7 @@ int main(int argc, char *argv[]) {
 		if (matrixkiiratas_gyak && ((ciklus%matrixkiiratas_gyak)==0)) {
 			fprintf(moutput, "\n#%d\n", ciklus);
 			fajlbaMatrix(matrix, ncol, ncol, moutput);
-			sprintf(savetoR, "%s/saveR%s_%d.bin\0", mentesmappa, azon, ciklus);
+			snprintf(savetoR, sizeof(savetoR), "%s/saveR%s_%d.bin", mentesmappa, azon, ciklus);
 			mentesRng(savetoR);
 			fflush(moutput);
 		}
@@ -344,7 +349,7 @@ int main(int argc, char *argv[]) {
 	if (matrixkiiratas_gyak && ((ciklus%matrixkiiratas_gyak) != 0)) {
 		fprintf(moutput, "\n#%d\n", ciklus);
 		fajlbaMatrix(matrix, ncol, ncol, moutput);
-		sprintf(savetoR, "%s/saveR%s_%d.bin\0", mentesmappa, azon, ciklus);
+		snprintf(savetoR, sizeof(savetoR), "%s/saveR%s_%d.bin", mentesmappa, azon, ciklus);
 		mentesRng(savetoR);
 	}
 	

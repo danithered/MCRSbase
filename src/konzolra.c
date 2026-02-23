@@ -2,7 +2,7 @@
 #include <math.h>
 
 void konzolraMatrix(int *matrix_f, int ncol_f, int nrow_f) {
-	int cellaszam_f, col_f, row_f;
+	int col_f, row_f;
 	
 	for(row_f=0; row_f<nrow_f; row_f++) {
 		for(col_f=0; col_f<ncol_f; col_f++) {
@@ -15,7 +15,7 @@ void konzolraMatrix(int *matrix_f, int ncol_f, int nrow_f) {
 }
 
 void konzolraMatrixD(double *matrix_f, int ncol_f, int nrow_f) {
-	int cellaszam_f, col_f, row_f;
+	int col_f, row_f;
 	
 	for(row_f=0; row_f<nrow_f; row_f++) {
 		for(col_f=0; col_f<ncol_f; col_f++) {

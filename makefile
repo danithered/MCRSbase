@@ -1,7 +1,8 @@
 PROGINAME = mcrs
 IDIR =./include
 CC=gcc
-CFLAGS=-I$(IDIR) `pkg-config --cflags --libs gsl`
+#CFLAGS=-I$(IDIR) `pkg-config --cflags --libs gsl`
+CFLAGS=-I$(IDIR) `pkg-config --cflags --libs gsl` -ggdb -fexceptions -Wall -pg # for testing
 
 ODIR=./src/obj
 LDIR =./lib
@@ -48,4 +49,4 @@ run:
 	rm -f ./OUT/testrun/*.*
 	rm -f ./OUT/testrun/save/*.*
 	#./$(PROGINAME) 6 5 0 0 0.1 0.1 0.03 1 1 1 0.15 0.2 0.2 0.2 2 1.5 1.5 1.6 testrun
-	./$(PROGINAME) 300 10000 1 0 0.2 2.0 100 1 100 1 0.125 0.125 0.125 0.125 8.0 2.0 4.0 6.0 testrun
+	./$(PROGINAME) 300 10000 1 0 0.2 2.0 100 1 100 1 3 0.125 0.125 0.125 0.125 8.0 2.0 4.0 6.0 testrun

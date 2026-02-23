@@ -49,6 +49,7 @@ int torottpalca(double *values, int noChoices, double random) {
 			return(choice);
 		}
 	}
+	return(-1);
 }
 
 double minimumD(double *vector_f, int dbszam_f) {
@@ -80,7 +81,7 @@ int betoltesRng(FILE *rngLoad_s) {
 
 int mentesRng(char *filename_f) {
 	FILE *rngSave_f;
-	struct stat st = {0}, stCsv = {0};
+	struct stat stCsv = {0};
 	
 	if (stat(filename_f, &stCsv) != -1) {
 		printf("\n%s ilyen nevu fajl mar van!\n", filename_f);

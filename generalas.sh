@@ -13,6 +13,7 @@
 #		1: klasszikus, mertani atlag
 #		2: minimum (by Gergo)
 #		3: reciproc osszegek reciproca (by Sz Andras)
+#	11: NOEA
 #	 
 #	... EA adatok ...
 #	(parazita, E1, E1 .... En) iniciacios gyakorisag
@@ -44,6 +45,7 @@ diffuzioGyak=(4 100)
 mintavetel_gyak=1
 matrixkiiratas_gyak=200
 modszer=(1 2 3)
+noEA=3 # not a vector!
 k_p=8.0
 k_1=2.0
 k_2=4.0
@@ -53,7 +55,7 @@ i_1=0.125
 i_2=0.125
 i_3=0.125
 
-echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer inicEAP inicEA1 inicEA2 inicEA3 kvaluesP kvalues1 kvalues2 kvalues3 >> $direct/$file
+echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer noEA inicEAP inicEA1 inicEA2 inicEA3 kvaluesP kvalues1 kvalues2 kvalues3 >> $direct/$file
 
 #for i in {0..2}
 for kp in ${k_p[@]}
@@ -84,7 +86,7 @@ do
 												do
 													for i in {1..1}}
 													do
-														echo $ncol $ciklusszam ${m} ${r} $phalal ${c} ${d} $mintavetel_gyak $matrixkiiratas_gyak ${k} ${ip} ${i1} ${i2} ${i3} ${kp} ${k1} ${k2} ${k3} >> $direct/$file
+														echo $ncol $ciklusszam ${m} ${r} $phalal ${c} ${d} $mintavetel_gyak $matrixkiiratas_gyak ${k} ${noEA} ${ip} ${i1} ${i2} ${i3} ${kp} ${k1} ${k2} ${k3} >> $direct/$file
 													done
 												done
 											done
