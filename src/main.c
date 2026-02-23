@@ -187,8 +187,8 @@ int main(int argc, char *argv[]) {
 	snprintf(mfajlnev, sizeof(mfajlnev), "%s/%s_matrix.data", mappa, azon);
 	
 	//log file kezd
-	if (stat(mappa, &st) == -1) mkdir(mappa, 7777);
-	if (stat(mentesmappa, &st) == -1) mkdir(mentesmappa, 7777);
+	if (stat(mappa, &st) == -1) mkdir(mappa, 0777);
+	if (stat(mentesmappa, &st) == -1) mkdir(mentesmappa, 0777);
 	
 	//fp = freopen("OUT/log", "a", stdout);
 	
@@ -203,6 +203,10 @@ int main(int argc, char *argv[]) {
 	}
 	
 	output = fopen(fajlnev, "a");
+	if(!output) {
+		fprintf(stderr, "nem lehet megnyitni a fajlt: %s\n", fajlnev);
+		return(1);
+	}
 	moutput = fopen(mfajlnev, "a");
 	
 	

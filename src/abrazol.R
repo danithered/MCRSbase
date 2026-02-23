@@ -18,9 +18,11 @@ plotgrid2 <- function(fajl, ncol, where, cols, vals, show.values=F, gen=NA) {
   color2D.matplot(x,cellcolors=cellcol, show.values=show.values, main=paste("generation:", where), border=NA, axes=F, asp=1, bty="n")
 }
 
+#fname = paste0(homedir, "f1/f1.data")
 for(azon in toAnalyse) {
   cat("working on ", azon, "\n")
   setwd(paste0(homedir, azon))
+  #adat = file(fname, "r")
   adat = file(paste0(azon, ".data"), "r")
   meddig = as.numeric(strsplit(system(paste0("wc -l ", azon, ".data"), intern=TRUE), " ")[[1]][1])-2
   
