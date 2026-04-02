@@ -2,6 +2,82 @@
 #include <stdlib.h>
 #include <math.h>
 
+int Rmod(int a, int b) {
+	int r = a%b; 
+	return r >= 0 ? r : r + b;
+}
+
+unsigned int countNoNeigh(const double neigh_tipus){
+	if(neigh_tipus < 0.0) {
+		fprintf(stderr, "countNoNeigh: a szomszedsagi tavolsag nem lehet negativ!\n");
+		return (0);
+	}
+	if(neigh_tipus == 0.0) {
+		return (0);
+	}
+	unsigned int no=0; 
+    
+	//other cells
+	int maxDist = (int) sqrt(neigh_tipus)+1;
+	for(int x = -maxDist; x <= maxDist; x++) for(int y = -maxDist; y <= maxDist; y++){ 
+		if( x*x + y*y <= neigh_tipus ) {
+			no++;
+		}
+	} //end for x and y
+	return(no);
+}
+
+void blueprintNeigh(const double neigh_tipus, int* n_inic_x, int* n_inic_y){
+	int index=0;
+	//self
+	n_inic_x[index] = 0;
+	n_inic_y[index++] = 0;
+    
+	//other cells
+	int maxDist = (int) sqrt(neigh_tipus)+1;
+	for(int x = -maxDist; x <= maxDist; x++) for(int y = -maxDist; y <= maxDist; y++){ 
+		if( (x || y) && (x*x + y*y <= neigh_tipus ) ) {
+			n_inic_x[index] = x;
+			n_inic_y[index++] = y;
+		}
+	} //end for x and y
+}
+
+int calcNeigh(const int i, const unsigned int n, int* n_inic_x, int* n_inic_y, const int ncol) {
+	return( Rmod( ((int)i/ncol + n_inic_y[n]) , ncol) * ncol + 
+		Rmod( Rmod(i , ncol) + n_inic_x[n] , ncol));
+}
+
+/** initialises the neighbour matrix for each cell, according to the given neighbourhood distance
+ * @param neigh_vec: the neighbour matrix to be filled (already allocated)
+ * @param size: the number of cells in the grid
+ * @param neigh_tipus: the neighbourhood distance
+ * */
+void neighInic(int* neigh_vec, const int size, const double neigh_tipus, const int ncol) {
+	int no_neigh = countNoNeigh(neigh_tipus);
+	int* n_inic_x = (int*) calloc(no_neigh, sizeof(int));
+	int* n_inic_y = (int*) calloc(no_neigh, sizeof(int));
+	if(!n_inic_x || !n_inic_y) {
+		fprintf(stderr, "neighInic: nem sikerult lefoglalni a szomszedsag matrixot!\n");
+		return;
+	}
+
+	blueprintNeigh(neigh_tipus, n_inic_x, n_inic_y);
+
+	for(int i=0; i < size; i++){ //iterate throught grid
+		//assign neighbours
+		for(unsigned int n = 0; n < no_neigh; ++n) {	
+			int myneigh = calcNeigh(i, n, n_inic_x, n_inic_y, ncol);
+			if( myneigh > -1 ) {
+				neigh_vec[i*no_neigh + n] = myneigh;
+			}
+		}
+	}
+} //end neighInic
+
+
+/// Original Functions
+
 //feltolti a szomszedsagmatrixot: sajat pozicio, N, W, E, S
 int * metNeighInic(int cellaszam_f, int ncol_f, double neigh_tipus_f) {
 	/*
