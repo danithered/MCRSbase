@@ -15,7 +15,7 @@ unsigned long long binom(unsigned long long n, unsigned long long k) {
     unsigned long long result = 1;
 
     for (unsigned long long i = 1; i <= k; i++) {
-        result *= ((n - k + i) / i);
+        result = result * ((n - k + i) / (double) i);
     }
 
     return result;
@@ -73,25 +73,32 @@ double randomMet(unsigned long *eas, int noEA){
   return (gsl_rng_uniform(r) * 2);
 }
 
-void generate(double *map, int pos, int remaining, unsigned long *eas, int X) {
+void generate(double *map, int pos, int remaining, unsigned long *eas, int X, FILE* fptr) {
     if (pos == X - 1) {
         eas[pos] = remaining;
-        map[getIndex(eas, X)] = randomMet(eas, X);
+	unsigned long long index = getIndex(eas, X); 
+        map[index] = randomMet(eas, X);
+	if(fptr) {
+		for(int i=0; i<X; i++){
+			fprintf(fptr, "%lu ", eas[i]);
+		}
+		fprintf(fptr, "%g\n", map[index]);
+	}
         return;
     }
 
     for (int v = 0; v <= remaining; v++) {
         eas[pos] = v;
-        generate(map, pos + 1, remaining - v, eas, X);
+        generate(map, pos + 1, remaining - v, eas, X, fptr);
     }
 }
 
-void generate_all(double* map, int N, int X) {
+void generate_all(double* map, int N, int X, FILE* fptr) {
     unsigned long eas[X];
-    generate(map, 0, N, eas, X);
+    generate(map, 0, N, eas, X, fptr);
 }
 
-void createMapping(double **map, int no_ea, int no_neighbours){
+void createMapping(double **map, int no_ea, int no_neighbours, FILE* fptr){
 	// calculate size
 	int size = binom(no_ea + no_neighbours, no_ea);
 	// allocate memory for the map
@@ -103,11 +110,10 @@ void createMapping(double **map, int no_ea, int no_neighbours){
 
 	// fill the map based on the function
 	for(unsigned int nrep = 0; nrep <= no_neighbours; ++nrep){
-		generate_all(*map, nrep, no_ea) ;
+		generate_all(*map, nrep, no_ea, fptr) ;
 	}
 	
 }
-
 
 double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szomsz_cellaszam_f, int enzimaktszam_f, double reciprocEnzimaktszam_f, int cella_f) {
 //	printf("\nenzimaktszam=%d", enzimaktszam_f);

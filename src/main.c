@@ -176,10 +176,6 @@ int main(int argc, char *argv[]) {
             return(1);
 	}
 
-	if(modszer == 5) {
-		createMapping(&fitness_map, NOEA, met_neigh_cellaszam);
-	}
-
 	//szovegmuveletek
 	strcat(mappa, azon);
 	snprintf(mentesmappa, sizeof(mentesmappa), "%s/%s", mappa, "save");
@@ -209,7 +205,15 @@ int main(int argc, char *argv[]) {
 	}
 	moutput = fopen(mfajlnev, "a");
 	
-	
+	// Metab map create	
+	if(modszer == 5) {
+		char mapfilename[250]="\0";
+		snprintf(mapfilename, sizeof(mapfilename), "%s/%s_metab_map.data", mappa, azon);
+		FILE *mapfile = fopen(mapfilename, "a");
+		createMapping(&fitness_map, NOEA, met_neigh_cellaszam, mapfile);
+		fclose(mapfile);
+	}
+
 	/******************************
 	******** A LENYEG *************
 	*******************************/
@@ -235,28 +239,32 @@ int main(int argc, char *argv[]) {
 	
 	//Kimenet
 //  	konzolraMatrix(matrix, ncol, ncol);
-	fprintf(output, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer");
+	fprintf(output, "# ncol=%d ciklusszam=%d met_neigh_meret=%g repl_neigh_meret=%g phalal=%g claimEmpty=%g diffuzioGyak=%g mintavetel_gyak=%d matrixkiiratas_gyak=%d modszer=%d id=%s",
+			ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer, azon);
+
 	fprintf(moutput, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer");
 	for(iter=0; iter <= NOEA; iter++) {
-		fprintf(output, " inicEA%d", iter?iter:-1 );
+		if(iter){
+			fprintf(output, " k_%d=%g", iter, kvalues[iter] );
+		} else {
+			fprintf(output, " k_par=%g", kvalues[iter] );
+		}
 		fprintf(moutput, " inicEA%d", iter?iter:-1 );
 	}
+
+	fprintf(output, "\n");
+
 	for(iter=0; iter <= NOEA; iter++) {
-		fprintf(output, " kvalues%d", iter?iter:-1 );
 		fprintf(moutput, " kvalues%d", iter?iter:-1 );
 	}
-	fprintf(output, " azon\n%d %d %g %g %g %g %g %d %d %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer);
 	fprintf(moutput, " azon\n%d %d %g %g %g %g %g %d %d %d", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer);
 	for(iter=0; iter <= NOEA; iter++) {
-		fprintf(output, " %g", *(inicEA+iter) );
 		fprintf(moutput, " %g", *(inicEA+iter) );
 	}
 	for(iter=0; iter <= NOEA; iter++) {
-		fprintf(output, " %g", *(kvalues+iter) );
 		fprintf(moutput, " %g", *(kvalues+iter) );
 	}
 	
-	fprintf(output, " %s\n", azon);
 	fprintf(moutput, " %s\n#0\n", azon);
 	
 	replikatornum = atlagadatok(matrix, meret, NOEA, 0, output);

@@ -30,19 +30,19 @@ int atlagadatok(int *matrix_f, int meret_f, int noEa_f, int ciklus_f, FILE *fajl
     
     int *szamlalo_f, cella_f = 0, osszesen = 0;
     
-    szamlalo_f = (int *) calloc(noEa_f, sizeof(int));
-    szamlalo_f++;
+    szamlalo_f = (int *) calloc(noEa_f + 2, sizeof(int)); // types of replicators + parazita + ures cella
+    ++szamlalo_f; // there is a -1 position!
     
     //szamlalas
     for(cella_f = 0; cella_f < meret_f; cella_f++) {
-        (*(szamlalo_f + *(matrix_f + cella_f)) )++;
+        szamlalo_f[ matrix_f[cella_f] ]++;
     }
     
     //kiiras
     fprintf(fajl_f, "%d", ciklus_f);
-    for(ciklus_f = -1; ciklus_f <= noEa_f; ciklus_f++) {
-        fprintf(fajl_f, " %d", *(szamlalo_f + ciklus_f) );
-        if(ciklus_f) osszesen += *(szamlalo_f + ciklus_f);
+    for(int type = -1; type <= noEa_f; ++type) {
+        fprintf(fajl_f, " %d", szamlalo_f[type] );
+        if(type) osszesen += szamlalo_f[type];
     }
     fprintf(fajl_f, "\n");
     

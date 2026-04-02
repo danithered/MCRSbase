@@ -9,10 +9,14 @@ mybinom <- function(n, k) {
   
   for (i in 1:k) {
     result = result * (n - k + i) / i
+    cat("i=", i, ", k=", k, ", n=", n, ", result=" ,result, ", denom=", n-k+i, ", mult=", (n-k+i)/i, "\n")
   }
   
   return(result)
 }
+
+N=9; X=3; choose(N+X, X)
+N=9; X=3; mybinom(N+X, X)
 
 N=4; X=3; choose(N+X, X)
 N=3; X=4; choose(N+X, X)

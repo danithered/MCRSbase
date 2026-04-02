@@ -50,5 +50,5 @@ int diffTM (int *matrix_f, int *diffmatrix_f, int target_f);
 //metab.c
 double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szomsz_cellaszam_f, int enzimaktszam_f, double reciprocEnzimaktszam_f, int cella_f);
 unsigned long long getIndex(unsigned long *eas, unsigned long noEA);
-void createMapping(double **map, int no_ea, int no_neighbours);
+void createMapping(double **map, int no_ea, int no_neighbours, FILE* fptr);
 
