@@ -7,9 +7,10 @@ int Rmod(int a, int b) {
 	return r >= 0 ? r : r + b;
 }
 
-unsigned int countNoNeigh(const double neigh_tipus){
+int szomsz_meret(double neigh_tipus) {
+// unsigned int countNoNeigh(const double neigh_tipus){
 	if(neigh_tipus < 0.0) {
-		fprintf(stderr, "countNoNeigh: a szomszedsagi tavolsag nem lehet negativ!\n");
+		fprintf(stderr, "szomsz_meret: a szomszedsagi tavolsag nem lehet negativ!\n");
 		return (0);
 	}
 	if(neigh_tipus == 0.0) {
@@ -54,7 +55,10 @@ int calcNeigh(const int i, const unsigned int n, int* n_inic_x, int* n_inic_y, c
  * @param neigh_tipus: the neighbourhood distance
  * */
 void neighInic(int* neigh_vec, const int size, const double neigh_tipus, const int ncol) {
-	int no_neigh = countNoNeigh(neigh_tipus);
+	// find size of neigh 
+	int no_neigh = szomsz_meret(neigh_tipus);
+
+	// create blueprint of neighbour positions
 	int* n_inic_x = (int*) calloc(no_neigh, sizeof(int));
 	int* n_inic_y = (int*) calloc(no_neigh, sizeof(int));
 	if(!n_inic_x || !n_inic_y) {
@@ -76,10 +80,48 @@ void neighInic(int* neigh_vec, const int size, const double neigh_tipus, const i
 } //end neighInic
 
 
+int * metNeighInic(int size, int ncol, double neigh_tipus) {
+	// find size of neigh 
+	int no_neigh = szomsz_meret(neigh_tipus);
+
+	// allocate neigh matrix (size * nsize)
+	int* neighs = (int*) calloc(size * no_neigh, sizeof(int));
+	if(!neighs) {
+		fprintf(stderr, "metNeighInic: nem sikerult lefoglalni a szomszedsag matrixot!\n");
+		return NULL;
+	}
+	
+	// create blueprint of neighbour positions
+	int* n_inic_x = (int*) calloc(no_neigh, sizeof(int));
+	int* n_inic_y = (int*) calloc(no_neigh, sizeof(int));
+	if(!n_inic_x || !n_inic_y) {
+		fprintf(stderr, "metNeighInic: nem sikerult lefoglalni a szomszedsag matrix blueprint-jet!\n");
+		return NULL;
+	}
+
+	blueprintNeigh(neigh_tipus, n_inic_x, n_inic_y);
+
+	for(int i=0; i < size; i++){ //iterate throught grid
+		//assign neighbours
+		for(unsigned int n = 0; n < no_neigh; ++n) {	
+			int myneigh = calcNeigh(i, n, n_inic_x, n_inic_y, ncol);
+			if( myneigh > -1 ) {
+				neighs[i*no_neigh + n] = myneigh;
+			}
+		}
+	}
+
+	// free blueprint arrays
+	free(n_inic_x);
+	free(n_inic_y);
+
+	// pass back neigh matrix
+	return(neighs);
+}
 /// Original Functions
 
 //feltolti a szomszedsagmatrixot: sajat pozicio, N, W, E, S
-int * metNeighInic(int cellaszam_f, int ncol_f, double neigh_tipus_f) {
+int * metNeighInic_old(int cellaszam_f, int ncol_f, double neigh_tipus_f) {
 	/*
 	 * cellaszam_f: az alapmatrix cellaszama
 	 * neigh_tipus_f: a szomsz. merete: ha 0 -> von Neumann; ha több -> Moore szomsz
@@ -138,13 +180,13 @@ int * metNeighInic(int cellaszam_f, int ncol_f, double neigh_tipus_f) {
 	return (matrix_f);
 }
 
-int szomsz_meret(double tipus_f) {
-	if(tipus_f < 1) return(5); //vonNeumann
-	else {
-		if(tipus_f - (int)tipus_f ) return(szomsz_meret((double)(int)tipus_f) + 4);
-		else return (pow(((int)tipus_f*2+1), 2)); //Moore szomszedsag: pl.: 2es szomsz eseten (2*2+1)^2=25 
-	}
-}
+// int szomsz_meret(double tipus_f) {
+	// if(tipus_f < 1) return(5); //vonNeumann
+	// else {
+		// if(tipus_f - (int)tipus_f ) return(szomsz_meret((double)(int)tipus_f) + 4);
+		// else return (pow(((int)tipus_f*2+1), 2)); //Moore szomszedsag: pl.: 2es szomsz eseten (2*2+1)^2=25 
+	// }
+// }
 
 int* difNeighInic(int meret_f, int ncol_f){
     int *dif_f, focal_f = 0;
