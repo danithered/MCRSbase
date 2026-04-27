@@ -79,6 +79,7 @@ void neighInic(int* neigh_vec, const int size, const double neigh_tipus, const i
 	}
 } //end neighInic
 
+extern int no_met_neigh;
 
 int * metNeighInic(int size, int ncol, double neigh_tipus) {
 	// find size of neigh 
@@ -116,6 +117,7 @@ int * metNeighInic(int size, int ncol, double neigh_tipus) {
 	free(n_inic_y);
 
 	// pass back neigh matrix
+	no_met_neigh = no_neigh;
 	return(neighs);
 }
 /// Original Functions

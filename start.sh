@@ -1,7 +1,7 @@
 #!/bin/bash
 
-maxnum=4
-file="param"
+maxnum=9
+file="param_T2_2"
 indirect="IN"
 outdirect="OUT"
 pids=(0)

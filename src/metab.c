@@ -115,6 +115,8 @@ void createMapping(double **map, int no_ea, int no_neighbours, FILE* fptr){
 	
 }
 
+extern int no_met_neigh;
+
 double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szomsz_cellaszam_f, int enzimaktszam_f, double reciprocEnzimaktszam_f, int cella_f) {
 //	printf("\nenzimaktszam=%d", enzimaktszam_f);
 	int szomszed_f = 0, nezett_f=0, enzakt_f = 0;
@@ -191,7 +193,26 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
 			metab_f = fitness_map[getIndex(enzimsum_f, enzimaktszam_f)];
 			
 			break;
-		// 6: M = (e1*e2)^n (n=-5.0, -4.5, ... 0.0 ... 5.0)
+		// 6: M = (e1*e2)^n (n=-5.0, -4.5, ... 0.0 ... 5.0
+		// 6: Linear flux)
+		case 6:
+			metab_f = 0;
+			for(enzakt_f=0; enzakt_f<enzimaktszam_f; enzakt_f++){
+				metab_f += 1.0 / (double) enzimsum_f[enzakt_f];
+			}
+			metab_f = NOEA * NOEA / metab_f / no_met_neigh; // T^2 / (Nm * sum 1/e)
+			break;
+		// 7: Monod
+		case 7:
+			double w_max = 1.0;
+			double K_R = 0.5 * no_met_neigh / NOEA; 
+			metab_f = w_max;
+
+			for(enzakt_f=0; enzakt_f<enzimaktszam_f; enzakt_f++){
+				double nR = (double) enzimsum_f[enzakt_f];
+				metab_f *= nR / (K_R + nR);
+			}
+			break;
 	}
 	
 	free (enzimsum_f);

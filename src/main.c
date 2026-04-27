@@ -20,7 +20,7 @@ main visszateresi ertekek:
 #include <sys/types.h>
 #include <string.h>
 
-unsigned int NOEA = 3;
+unsigned int NOEA = 3, no_met_neigh = 0;
 
 
 time_t timer;
@@ -107,8 +107,10 @@ int main(int argc, char *argv[]) {
 	* 11: NOEA
 	* 
 	* ... EA adatok ...
-	* 	iniciacios gyakorisag
-	* 	k
+	* 	[iniciacios gyakorisag, k] - parasite
+	* 	[iniciacios gyakorisag, k] - EA1
+	* 	[iniciacios gyakorisag, k] - EA2
+	* 	...
 	* 
 	* azon: egyedi azonosito
 	*/
@@ -220,11 +222,11 @@ int main(int argc, char *argv[]) {
 	
 	//Matrixok feltoltese
 	printf("Starting to inicialise matrix with probabilities (and k values):\n");
+	char** argptr = argv + 12;
 	for(ciklus=0; ciklus <= NOEA; ciklus++){
-		*(inicEA + ciklus) = atof(argv[argnum - 2*(NOEA+1) + ciklus]) ;
-		printf(" %f", *(inicEA + ciklus));
-		*(kvalues + ciklus) = atof(argv[argnum - NOEA - 1 + ciklus]) ;
-		printf(" (%f)", *(kvalues + ciklus));
+		inicEA[ciklus] = atof(*(argptr++)) ;
+		kvalues[ciklus] = atof(*(argptr++)) ;
+		printf(" %f(%f)", kvalues[ciklus], inicEA[ciklus] );
 	}
 	inicM(matrix, inicEA, NOEA, meret);
 	printf("\nInicialisation closed\n");
@@ -239,20 +241,25 @@ int main(int argc, char *argv[]) {
 	
 	//Kimenet
 //  	konzolraMatrix(matrix, ncol, ncol);
-	fprintf(output, "# ncol=%d ciklusszam=%d met_neigh_meret=%g repl_neigh_meret=%g phalal=%g claimEmpty=%g diffuzioGyak=%g mintavetel_gyak=%d matrixkiiratas_gyak=%d modszer=%d id=%s",
-			ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer, azon);
+	fprintf(output, "# ncol=%d ciklusszam=%d met_neigh_meret=%g repl_neigh_meret=%g phalal=%g claimEmpty=%g diffuzioGyak=%g mintavetel_gyak=%d matrixkiiratas_gyak=%d modszer=%d id=%s noEA=%d",
+			ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer, azon, NOEA);
 
 	fprintf(moutput, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer");
 	for(iter=0; iter <= NOEA; iter++) {
 		if(iter){
-			fprintf(output, " k_%d=%g", iter, kvalues[iter] );
+			fprintf(output, " k_%d=%g init_%d=%g", iter, kvalues[iter], iter, inicEA[iter] );
 		} else {
-			fprintf(output, " k_par=%g", kvalues[iter] );
+			fprintf(output, " k_par=%g init_par=%g", kvalues[iter], inicEA[iter] );
 		}
 		fprintf(moutput, " inicEA%d", iter?iter:-1 );
 	}
 
+	fprintf(output, "\ntime parasite empty");
+	for(iter=1; iter <= NOEA; iter++) {
+		fprintf(output, " T%d", iter);
+	}
 	fprintf(output, "\n");
+
 
 	for(iter=0; iter <= NOEA; iter++) {
 		fprintf(moutput, " kvalues%d", iter?iter:-1 );
