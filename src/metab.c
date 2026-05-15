@@ -117,6 +117,30 @@ void createMapping(double **map, int no_ea, int no_neighbours, FILE* fptr){
 
 extern int no_met_neigh;
 
+double maxMet(unsigned int size_met, int method) {
+	switch(method){
+		// geom mean
+		case 1:
+		case 8: 
+			int x = size_met / NOEA, remainder = size_met %% NOEA;
+			return( pow(x * (NOEA-remainder) + (x+1) * remainder, 1.0/(double) NOEA) );
+		// minimum
+		case 2:
+		case 9:
+			return( (double) (size_met / NOEA) );
+		// linear flux
+		case 10:
+			;;
+		// antifitness
+		case 11:
+			fprintf(stderr, "Not implemented\n");
+
+		default:
+			fprintf(stderr, "Method %d is not compatible for maximum counting\n", method);
+	}
+	return (0.0);
+}
+
 double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szomsz_cellaszam_f, int enzimaktszam_f, double reciprocEnzimaktszam_f, int cella_f) {
 //	printf("\nenzimaktszam=%d", enzimaktszam_f);
 	int szomszed_f = 0, nezett_f=0, enzakt_f = 0;
@@ -212,6 +236,28 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
 				double nR = (double) enzimsum_f[enzakt_f];
 				metab_f *= nR / (K_R + nR);
 			}
+			break;
+		// 8: geom mean maximized to 1
+		case 8:
+			metab_f =1;
+			for(enzakt_f=0; enzakt_f<enzimaktszam_f; enzakt_f++){
+				metab_f *= (double) *(enzimsum_f+enzakt_f);
+			}
+	
+			metab_f=pow(metab_f, reciprocEnzimaktszam_f);
+	
+			break;
+		// 9: minimum maximized to 1
+		case 9:
+			fprintf(stderr, "Not implemented\n");
+			break;
+		// 10: linear flux maximized to 1
+		case 10:
+			fprintf(stderr, "Not implemented\n");
+			break;
+		// 11: antifitness maximized to 1
+		case 11:
+			fprintf(stderr, "Not implemented\n");
 			break;
 	}
 	
