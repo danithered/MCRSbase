@@ -1,9 +1,11 @@
 #!/bin/bash
 
-maxnum=9
-file="param_T2_2"
-indirect="IN"
-outdirect="OUT"
+maxnum=9 # maximum number of simulations to run at the same time, should be less than the number of cores in the computer
+file="param" # naem of the file with parameters for simulations, should be in $indirect
+indirect="IN" # name of the directory where the file with parameters is, should be in the same directory as this script
+outdirect="OUT" # name of the directory where the output files will be, should be in the same directory as this script
+
+
 pids=(0)
 
 
