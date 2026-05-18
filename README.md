@@ -1,7 +1,11 @@
- # Compile
+# Compile and prepare for simulations
 
 ```
 make
+mkdir IN
+mkdir OUT
+chmod +x generalas.sh
+chmod +x start.sh
 ```
 
 # Usage
