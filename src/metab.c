@@ -4,6 +4,8 @@
 #include <randomgen.h>
 
 extern double* fitness_map;
+extern double antifitness_arg;
+extern int no_met_neigh;
 
 unsigned long long binom(unsigned long long n, unsigned long long k) {
     if (k > n) return 0;
@@ -115,23 +117,26 @@ void createMapping(double **map, int no_ea, int no_neighbours, FILE* fptr){
 	
 }
 
-extern int no_met_neigh;
 
 double maxMet(unsigned int size_met, int method) {
 	switch(method){
 		// geom mean
 		case 1:
 		case 8: 
-			int x = size_met / NOEA, remainder = size_met %% NOEA;
+			{
+			int x = size_met / NOEA, remainder = size_met % NOEA;
 			return( pow(x * (NOEA-remainder) + (x+1) * remainder, 1.0/(double) NOEA) );
+			}
 		// minimum
 		case 2:
 		case 9:
 			return( (double) (size_met / NOEA) );
 		// linear flux
 		case 10:
-			int x = size_met / NOEA, remainder = size_met %% NOEA;
+			{
+			int x = size_met / NOEA, remainder = size_met % NOEA;
 			return( 1 / ( 1/x * (NOEA-remainder) + 1/(x+1) * remainder ) );
+			}
 		// antifitness
 		case 11:
 			fprintf(stderr, "Not implemented\n");
@@ -265,7 +270,13 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
 			break;
 		// 11: antifitness maximized to 1
 		case 11:
-			fprintf(stderr, "Not implemented\n");
+			metab_f =1;
+			for(enzakt_f=0; enzakt_f<enzimaktszam_f; enzakt_f++){
+				metab_f *= (double) *(enzimsum_f+enzakt_f);
+			}
+	
+			metab_f=pow(metab_f, antifitness_arg);
+			metab_f /= maxMet(szomsz_cellaszam_f, method_f); // divide by the maximum possible value to scale to 1
 			break;
 	}
 	
