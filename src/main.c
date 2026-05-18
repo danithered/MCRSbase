@@ -245,8 +245,8 @@ int main(int argc, char *argv[]) {
 	
 	//Kimenet
 //  	konzolraMatrix(matrix, ncol, ncol);
-	fprintf(output, "# ncol=%d ciklusszam=%d met_neigh_meret=%g repl_neigh_meret=%g phalal=%g claimEmpty=%g diffuzioGyak=%g mintavetel_gyak=%d matrixkiiratas_gyak=%d modszer=%d id=%s noEA=%d",
-			ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer, azon, NOEA);
+	fprintf(output, "# ncol=%d ciklusszam=%d met_neigh_meret=%g repl_neigh_meret=%g phalal=%g claimEmpty=%g diffuzioGyak=%g mintavetel_gyak=%d matrixkiiratas_gyak=%d modszer=%d id=%s noEA=%d antifitness=%g",
+			ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer, azon, NOEA, antifitness_arg);
 
 	fprintf(moutput, "ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer");
 	for(iter=0; iter <= NOEA; iter++) {

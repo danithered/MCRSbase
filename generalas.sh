@@ -72,7 +72,7 @@ touch $direct/$file
 
 
 # echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer noEA inicEAP inicEA1 inicEA2 kvaluesP kvalues1 kvalues2 >> $direct/$file
-echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer noEA inicEAP inicEA1 inicEA2 inicEA3 inicEA4 kvaluesP kvalues1 kvalues2 kvalues3 kvalues4 >> $direct/$file
+echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer noEA antifitness inicEAP inicEA1 inicEA2 inicEA3 inicEA4 kvaluesP kvalues1 kvalues2 kvalues3 kvalues4 >> $direct/$file
 
 for i in {0..1}
 do
