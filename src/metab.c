@@ -130,7 +130,8 @@ double maxMet(unsigned int size_met, int method) {
 			return( (double) (size_met / NOEA) );
 		// linear flux
 		case 10:
-			;;
+			int x = size_met / NOEA, remainder = size_met %% NOEA;
+			return( 1 / ( 1/x * (NOEA-remainder) + 1/(x+1) * remainder ) );
 		// antifitness
 		case 11:
 			fprintf(stderr, "Not implemented\n");
@@ -245,15 +246,22 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
 			}
 	
 			metab_f=pow(metab_f, reciprocEnzimaktszam_f);
+			metab_f /= maxMet(szomsz_cellaszam_f, method_f); // divide by the maximum possible value to scale to 1
 	
 			break;
 		// 9: minimum maximized to 1
 		case 9:
-			fprintf(stderr, "Not implemented\n");
+			metab_f = minimum(enzimsum_f, enzimaktszam_f);
+			metab_f /= maxMet(szomsz_cellaszam_f, method_f); // divide by the maximum possible value to scale to 1
 			break;
 		// 10: linear flux maximized to 1
 		case 10:
-			fprintf(stderr, "Not implemented\n");
+			metab_f = 0;
+			for(enzakt_f=0; enzakt_f<enzimaktszam_f; enzakt_f++){
+				metab_f += 1.0 / (double) enzimsum_f[enzakt_f];
+			}
+			metab_f = NOEA * NOEA / metab_f / no_met_neigh; // T^2 / (Nm * sum 1/e)
+			metab_f /= maxMet(szomsz_cellaszam_f, method_f); // divide by the maximum possible value to scale to 1
 			break;
 		// 11: antifitness maximized to 1
 		case 11:

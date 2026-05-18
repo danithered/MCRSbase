@@ -21,6 +21,7 @@ main visszateresi ertekek:
 #include <string.h>
 
 unsigned int NOEA = 3, no_met_neigh = 0;
+double antifitness_arg = 0.0;
 
 
 time_t timer;
@@ -42,7 +43,8 @@ int main(int argc, char *argv[]) {
 	printf("\nProgram futasa elkezdodott:\n%s\n", idoki);
     
 	//Argomentumok beolvasasa
-	int argnum = 12 + 2*(NOEA+1), argszamlalo;
+	int no_args = 11;
+	int argnum = no_args + 1 + 2*(NOEA+1), argszamlalo;
 	char *token, *read2, *readfree, read[512]="\0";
 	FILE *infile = NULL, *rngSeed=NULL;
 	if (argc < argnum) {
@@ -88,7 +90,8 @@ int main(int argc, char *argv[]) {
 	double met_neigh_meret = atof(argv[3]), repl_neigh_meret = atof(argv[4]), phalal = atof(argv[5]), claimEmpty = atof(argv[6]), diffuzioGyak = atof(argv[7]);
 	char azon[20] = "\0";
 	NOEA = atoi(argv[11]);
-	strcpy(azon, argv[12 + 2*(NOEA+1)]);
+	antifitness_arg = atof(argv[12]);
+	strcpy(azon, argv[no_args + 1 + 2*(NOEA+1)]);
     
     
 	/* 1: ncol: alapmatrix oszlopainak szama
@@ -105,6 +108,7 @@ int main(int argc, char *argv[]) {
 	* 	2: minimum (by Gergo)
 	* 	3: reciproc osszegek reciproca (by Sz Andras)
 	* 11: NOEA
+	* 12: antifitness arg (used only when modszer=11)
 	* 
 	* ... EA adatok ...
 	* 	[iniciacios gyakorisag, k] - parasite
@@ -222,7 +226,7 @@ int main(int argc, char *argv[]) {
 	
 	//Matrixok feltoltese
 	printf("Starting to inicialise matrix with probabilities (and k values):\n");
-	char** argptr = argv + 12;
+	char** argptr = argv + no_args + 1;
 	for(ciklus=0; ciklus <= NOEA; ciklus++){
 		inicEA[ciklus] = atof(*(argptr++)) ;
 		kvalues[ciklus] = atof(*(argptr++)) ;
