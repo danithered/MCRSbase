@@ -43,52 +43,10 @@ int main(int argc, char *argv[]) {
 	printf("\nProgram futasa elkezdodott:\n%s\n", idoki);
     
 	//Argomentumok beolvasasa
-	int no_args = 11;
-	int argnum = no_args + 1 + 2*(NOEA+1), argszamlalo;
-	char *token, *read2, *readfree, read[512]="\0";
-	FILE *infile = NULL, *rngSeed=NULL;
-	if (argc < argnum) {
-		printf("tul keves argomentum: %d szukseges\n", argnum);
-		return(3);
-	}
-	
-	if(argc == (argnum+2) ) {
-		// rng seed beolvasasa fajlbol
-		printf("RNG seed beolvasasa %s fajlbol\n", argv[argnum + 1]);
-		rngSeed = fopen(argv[argnum + 1], "rb");
-		if(!infile) printf("%s fajl beolvasasa nem sikerult!\n", argv[argnum + 1]);
-		if( !betoltesRng(rngSeed) ) {
-			printf("RNG Seed betoltese sikerult\n");
-		}
-		fclose(rngSeed);
-	}	
-	
-	if(argc > (argnum+2) ) {
-		//argomentumok atirasa
-		printf("megkezdett szimulacio folytatasa\nArgomentumok beolvasasa fajlbol: %s\nGSL random seed beolvasasa fajlbol: %s", argv[argnum + 1], argv[argnum + 2]);
-		infile = fopen(argv[argnum + 1], "r");
-		if(!infile) printf("%s fajl beolvasasa nem sikerult!\n", argv[argnum + 1]);
-		fgets(read, 256, infile);
-		fgets(read, 256, infile);
-		readfree = read2 = strdup(read);
-		for(argszamlalo=1; ((token = strsep(&read2, " "))); argszamlalo++ ) {
-			strcpy(argv[argszamlalo], token);
-		}
-		free(readfree);
-		printf("Argomentumok beolvasasa sikerult.\nRNG Seed beolvasasa folyamatban...\n");
-		
-		//rng seed
-		rngSeed = fopen(argv[argnum + 2], "rb");
-		if(!infile) printf("%s fajl beolvasasa nem sikerult!\n", argv[argnum + 2]);
-		if( !betoltesRng(rngSeed) ) {
-			printf("RNG Seed betoltese sikerult\n");
-		}
-		fclose(rngSeed);
-	}
-	
+	int no_args = 12;
 	int ncol=atoi(argv[1]), ciklusszam = atoi(argv[2]), mintavetel_gyak = atoi(argv[8]), matrixkiiratas_gyak = atoi(argv[9]), modszer = atoi(argv[10]);
 	double met_neigh_meret = atof(argv[3]), repl_neigh_meret = atof(argv[4]), phalal = atof(argv[5]), claimEmpty = atof(argv[6]), diffuzioGyak = atof(argv[7]);
-	char azon[20] = "\0";
+	char azon[50] = "\0";
 	NOEA = atoi(argv[11]);
 	antifitness_arg = atof(argv[12]);
 	strcpy(azon, argv[no_args + 1 + 2*(NOEA+1)]);
@@ -119,8 +77,55 @@ int main(int argc, char *argv[]) {
 	* azon: egyedi azonosito
 	*/
 	
-	printf("Argomentumok sikeresen beolvasva:\n%d %d %f %f %f %f %f %d %d %d %s\n", ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer, azon);
+	printf("Argomentumok sikeresen beolvasva:\nncol=%d ciklusszam=%d met_neigh_meret=%f repl_neigh_meret=%f phalal=%f claimEmpty=%f diff=%f mintavelet_gyak=%d matrixkiiratas_gyak=%d modszer=%d noEA=%d antifitness=%g azon=%s\n", 
+			ncol, ciklusszam, met_neigh_meret, repl_neigh_meret, phalal, claimEmpty, diffuzioGyak, mintavetel_gyak, matrixkiiratas_gyak, modszer, NOEA, antifitness_arg, azon);
     
+	
+	// Reading in data (saved seed or previous simulation)
+	int argnum = no_args + 1 + 2*(NOEA+1);
+	if (argc < argnum) {
+		printf("tul keves argomentum: %d szukseges\n", argnum);
+		return(3);
+	}
+	
+	if(argc == (argnum+2) ) {
+		// rng seed beolvasasa fajlbol
+		FILE *infile = NULL, *rngSeed=NULL;
+		printf("RNG seed beolvasasa %s fajlbol\n", argv[argnum + 1]);
+		rngSeed = fopen(argv[argnum + 1], "rb");
+		if(!infile) printf("%s fajl beolvasasa nem sikerult!\n", argv[argnum + 1]);
+		if( !betoltesRng(rngSeed) ) {
+			printf("RNG Seed betoltese sikerult\n");
+		}
+		fclose(rngSeed);
+	}	
+	
+	if(argc > (argnum+2) ) {
+		//argomentumok atirasa
+		int argszamlalo;
+		char *token, *read2, *readfree, read[512]="\0";
+		FILE *infile = NULL, *rngSeed=NULL;
+		printf("megkezdett szimulacio folytatasa\nArgomentumok beolvasasa fajlbol: %s\nGSL random seed beolvasasa fajlbol: %s", argv[argnum + 1], argv[argnum + 2]);
+		infile = fopen(argv[argnum + 1], "r");
+		if(!infile) printf("%s fajl beolvasasa nem sikerult!\n", argv[argnum + 1]);
+		fgets(read, 256, infile);
+		fgets(read, 256, infile);
+		readfree = read2 = strdup(read);
+		for(argszamlalo=1; ((token = strsep(&read2, " "))); argszamlalo++ ) {
+			strcpy(argv[argszamlalo], token);
+		}
+		free(readfree);
+		printf("Argomentumok beolvasasa sikerult.\nRNG Seed beolvasasa folyamatban...\n");
+		
+		//rng seed
+		rngSeed = fopen(argv[argnum + 2], "rb");
+		if(!infile) printf("%s fajl beolvasasa nem sikerult!\n", argv[argnum + 2]);
+		if( !betoltesRng(rngSeed) ) {
+			printf("RNG Seed betoltese sikerult\n");
+		}
+		fclose(rngSeed);
+	}
+	
     
 	//Valtozok deklaralasa
 	int meret=ncol*ncol, ciklus=0, iter=0, cella=0, met_neigh_cellaszam=0, repl_neigh_cellaszam=0, replikatornum=1, num_repl_neigh=0, nezett=0, sikeres=0;
@@ -225,7 +230,7 @@ int main(int argc, char *argv[]) {
 	*******************************/
 	
 	//Matrixok feltoltese
-	printf("Starting to inicialise matrix with probabilities (and k values):\n");
+	printf("Starting to inicialise matrix with k values (and initial probabilites):\n");
 	char** argptr = argv + no_args + 1;
 	for(ciklus=0; ciklus <= NOEA; ciklus++){
 		inicEA[ciklus] = atof(*(argptr++)) ;
