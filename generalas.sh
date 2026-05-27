@@ -5,24 +5,24 @@
 ############################################################
 
 ncol=1000
-ciklusszam=10000
+ciklusszam=50000
 # met_neigh_meret=(8 16 32)
-met_neigh_meret=(8)
-repl_neigh_meret=1
-phalal=(0.1 0.2)
-claimEmpty=(0.5 1.0)
-diffuzioGyak=0
+met_neigh_meret=(8 32)
+repl_neigh_meret=(1 8)
+phalal=(0.0001 0.0005)
+claimEmpty=(0.0001 0.0005)
+diffuzioGyak=(0)
 mintavetel_gyak=10
 matrixkiiratas_gyak=5000
-modszer=(8 9) # 1: geom mean, 2: minimum, 3: harmonic mean, 4: flat (if any is 0, M=0, else M=1), 5: random uniform U(0,2), 6: Linear flux, 7: Monod, 8: geom mean maximized to 1, 9: minimum maximized to 1, 10: linear flux maximized to 1, 11: antifitness maximized to 1
+modszer=(4 8) # 1: geom mean, 2: minimum, 3: harmonic mean, 4: flat (if any is 0, M=0, else M=1), 5: random uniform U(0,2), 6: Linear flux, 7: Monod, 8: geom mean maximized to 1, 9: minimum maximized to 1, 10: linear flux maximized to 1, 11: antifitness maximized to 1
 noEA=4 # not a vector! If you change this, you have to comment in/out the line nested deep in the for loops!
 antifitness=0.0 # you can make it a vector as well
 
 # replication rates
 k_1=1.0
-k_2=1.2
-k_3=1.4
-k_4=1.6
+k_2=1.05
+k_3=1.1
+k_4=1.15
 
 # initial frequencies
 i_1=0.2
@@ -45,9 +45,17 @@ i_4=0.2
 #	8: mintavetel_gyak: milyen gyakran irjon ki atlagadatokat: 0 soha, 1 minden generacioban, 2 minden 2. generacioban
 #	9: matrixkiiratas_gyak: milyen gyakran irja ki a teljes matrixot
 #	10: modszer: melyik fuggvennyel szamitsa ki a metabolizmus hatekonysagat
-#		1: klasszikus, mertani atlag
-#		2: minimum (by Gergo)
-#		3: reciproc osszegek reciproca (by Sz Andras)
+#		1: geom mean
+#		2: minimum
+#		3: harmonic mean
+#		4: flat (if any is 0, M=0, else M=1)
+#		5: random uniform U(0,2)
+#		6: Linear flux
+#		7: Monod
+#		8: geom mean maximized to 1
+#		9: minimum maximized to 1
+#		10: linear flux maximized to 1
+#		11: antifitness maximized to 1
 #	11: NOEA
 #	 
 #	... EA adatok ...
@@ -58,7 +66,7 @@ i_4=0.2
 #	
 
 direct="IN"
-file="param"
+file="param2"
 if [ ! -d  $direct ]; then
 	mkdir IN
 fi
@@ -74,7 +82,7 @@ touch $direct/$file
 # echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer noEA inicEAP inicEA1 inicEA2 kvaluesP kvalues1 kvalues2 >> $direct/$file
 echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer noEA antifitness inicEAP kvaluesP inicEA1 kvalues1 inicEA2 kvalues2 inicEA3 kvalues3 inicEA4 kvalues4 >> $direct/$file
 
-for i in {0..1}
+for i in {1..1}
 do
 #for kp in ${k_p[@]}
 #do
