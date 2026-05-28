@@ -83,7 +83,7 @@ touch $direct/$file
 # echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer noEA inicEAP inicEA1 inicEA2 kvaluesP kvalues1 kvalues2 >> $direct/$file
 echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer noEA antifitness inicEAP kvaluesP inicEA1 kvalues1 inicEA2 kvalues2 inicEA3 kvalues3 inicEA4 kvalues4 >> $direct/$file
 
-for ((i=1; i<$repeats; i++))
+for ((i=0; i<$repeats; i++))
 do
 #for kp in ${k_p[@]}
 #do
