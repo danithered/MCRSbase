@@ -73,10 +73,10 @@ ggsave("/home/danielred/data/alma/andrasnak/2026_02_24/random.png", width=10, he
 
 
 fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
-  grep("stest7.1_", x=_, value=T) |>
+  grep("stest8b.1_", x=_, value=T) |>
   grep("_output_", x=_, value=T, invert=T) 
   
-fn <- "stest8.1_11"
+# fn <- "stest8.1_11"
 sims <- data.frame()
 
 for(fn in fns)

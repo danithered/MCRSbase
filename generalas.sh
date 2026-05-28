@@ -4,13 +4,14 @@
 ######## PARAMETEREK - ezket kell majd varialni ############
 ############################################################
 
+repeats=1
 ncol=1000
-ciklusszam=50000
+ciklusszam=100000
 # met_neigh_meret=(8 16 32)
 met_neigh_meret=(8 32)
-repl_neigh_meret=(1 8)
-phalal=(0.0001 0.0005)
-claimEmpty=(0.0001 0.0005)
+repl_neigh_meret=(8 16)
+phalal=(0.0001 0.001)
+claimEmpty=(0.0001 0.001)
 diffuzioGyak=(0)
 mintavetel_gyak=10
 matrixkiiratas_gyak=5000
@@ -82,7 +83,7 @@ touch $direct/$file
 # echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer noEA inicEAP inicEA1 inicEA2 kvaluesP kvalues1 kvalues2 >> $direct/$file
 echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer noEA antifitness inicEAP kvaluesP inicEA1 kvalues1 inicEA2 kvalues2 inicEA3 kvalues3 inicEA4 kvalues4 >> $direct/$file
 
-for i in {1..1}
+for ((i=1; i<$repeats; i++))
 do
 #for kp in ${k_p[@]}
 #do
