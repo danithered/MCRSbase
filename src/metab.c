@@ -150,7 +150,8 @@ double maxMet(unsigned int size_met, int method) {
 double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szomsz_cellaszam_f, int enzimaktszam_f, double reciprocEnzimaktszam_f, int cella_f) {
 //	printf("\nenzimaktszam=%d", enzimaktszam_f);
 	int szomszed_f = 0, nezett_f=0, enzakt_f = 0;
-	unsigned long *enzimsum_f, metab_f=1;
+	unsigned long *enzimsum_f; 
+	double metab_f=1.0;
 	
 	/* szomszed_f: a target (cella_f) szomszedjanak sorszama/ hanyadik szomszedot nezzuk eppen
 	 * nezett_f: hanyadik cellat nezzuk eppen
@@ -230,7 +231,7 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
 			for(enzakt_f=0; enzakt_f<enzimaktszam_f; enzakt_f++){
 				metab_f += 1.0 / (double) enzimsum_f[enzakt_f];
 			}
-			metab_f = NOEA * NOEA / metab_f / no_met_neigh; // T^2 / (Nm * sum 1/e)
+			if(metab_f != 0.0) metab_f = NOEA * NOEA / metab_f / no_met_neigh; // T^2 / (Nm * sum 1/e)
 			break;
 		// 7: Monod
 		case 7:
@@ -265,7 +266,7 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
 			for(enzakt_f=0; enzakt_f<enzimaktszam_f; enzakt_f++){
 				metab_f += 1.0 / (double) enzimsum_f[enzakt_f];
 			}
-			metab_f = NOEA * NOEA / metab_f / no_met_neigh; // T^2 / (Nm * sum 1/e)
+			if(metab_f != 0.0) metab_f = NOEA * NOEA / metab_f / no_met_neigh; // T^2 / (Nm * sum 1/e)
 			metab_f /= maxMet(szomsz_cellaszam_f, method_f); // divide by the maximum possible value to scale to 1
 			break;
 		// 11: antifitness maximized to 1

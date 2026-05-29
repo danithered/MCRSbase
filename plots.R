@@ -73,6 +73,8 @@ ggsave("/home/danielred/data/alma/andrasnak/2026_02_24/random.png", width=10, he
 
 
 fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
+  grep("20679421", x=_, value=T)
+fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
   grep("stest8b.1_", x=_, value=T) |>
   grep("_output_", x=_, value=T, invert=T) 
   
@@ -81,7 +83,10 @@ sims <- data.frame()
 
 for(fn in fns)
 {
-url <- paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn, "/", fn, ".data")
+files <- dir(paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn))
+files <- files[files != "save"]
+url <- paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn, "/", grep("_matrix.data", files, invert=T, value=T))
+
 comment <- grep("#",readLines(url), fixed=T, value=T)
 comment |>
   gsub("# ", "", x=_) |>
@@ -99,7 +104,10 @@ df |>
   pivot_longer(!time) |>
   ggplot()+
   geom_line(aes(x=time, y=value, color=name))+
-  labs(title = fn, tag = paste(names(comment), comment, sep="=", collapse="\n") )+
+  labs(title = fn, 
+       # tag = paste(names(comment), comment, sep="=", collapse="\n") 
+       tag = paste(names(comment[c("phalal", "claimEmpty", "modszer", "met_neigh_meret", "repl_neigh_meret")]), comment[c("phalal", "claimEmpty", "modszer", "met_neigh_meret", "repl_neigh_meret")], sep="=", collapse="\n") 
+       )+
   theme(plot.tag.location = "panel", plot.tag = element_text(hjust=0)) -> tp
   print(tp)
 
