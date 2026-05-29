@@ -15,5 +15,5 @@ module load gcc
 make
 
 # submit
-qsub -J 1-${n} -v INFILE="${infile}" -N "${simid}" start_pbs.sh
+qsub -J 1-${n} -v INFILE="${infile}" SID="${simid}" -N "${simid}" start_pbs.sh
 
