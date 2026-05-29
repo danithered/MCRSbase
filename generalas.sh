@@ -6,7 +6,7 @@
 
 repeats=1
 ncol=1000
-ciklusszam=100000
+ciklusszam=200000
 # met_neigh_meret=(8 16 32)
 met_neigh_meret=(8 32)
 repl_neigh_meret=(8 16)

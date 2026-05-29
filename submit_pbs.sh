@@ -1,7 +1,7 @@
 #!/bin/bash
 
 indirect=IN
-simid=mcrs_mapping1
+simid=mcrs_mapping2
 infile=param2
 
 # count simulations
@@ -15,5 +15,5 @@ module load gcc
 make
 
 # submit
-qsub -J 1-${n} -v INFILE="${infile}" SID="${simid}" -N "${simid}" start_pbs.sh
+qsub -J 1-${n} -v INFILE="${infile}",SID="${simid}" -N "${simid}" start_pbs.sh
 
