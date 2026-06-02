@@ -72,8 +72,9 @@ ggsave("/home/danielred/data/alma/andrasnak/2026_02_24/random.png", width=10, he
 
 
 
-fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
-  grep("20679421", x=_, value=T)
+fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/OUT") |>
+  grep("metacentrum", x=_, value=T)|>
+  grep("job_info", x=_, value=T, invert=T)
 fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
   grep("stest8b.1_", x=_, value=T) |>
   grep("_output_", x=_, value=T, invert=T) 
@@ -83,9 +84,9 @@ sims <- data.frame()
 
 for(fn in fns)
 {
-files <- dir(paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn))
+files <- dir(paste0("/home/danielred/data/programs/MCRSbase/OUT/OUT/", fn))
 files <- files[files != "save"]
-url <- paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn, "/", grep("_matrix.data", files, invert=T, value=T))
+url <- paste0("/home/danielred/data/programs/MCRSbase/OUT/OUT/", fn, "/", grep("_matrix.data", files, invert=T, value=T))
 
 comment <- grep("#",readLines(url), fixed=T, value=T)
 comment |>
@@ -111,7 +112,7 @@ df |>
   theme(plot.tag.location = "panel", plot.tag = element_text(hjust=0)) -> tp
   print(tp)
 
-sims <- rbind(sims, cbind(fn=fn, as.data.frame(comment), df[nrow(df),c("time", "empty")]))
+sims <- rbind(sims, cbind(fn=fn, as.data.frame(comment), df[nrow(df),c("time", "empty", grep("T", names(df), value=T))]))
 }
 
 ggplot(sims)+
@@ -119,4 +120,22 @@ ggplot(sims)+
   facet_grid(phalal~paste("repl", repl_neigh_meret))+
   scale_size_continuous(range=c(1, 2))
 sapply(sims, unique)
+
+
+str(sims)
+apply(sims, 2, unique)
+
+
+sims |>
+  filter(repl_neigh_meret==16, phalal==0.0001)|>
+  # mutate(modszer=replace_values(modszer, from=1:11, to =c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))) |>
+  pivot_longer(starts_with("T", ignore.case = F), names_to = "type", values_to = "replicator_count")|>
+  ggplot(aes(x=modszer, y=replicator_count, color=type))+
+  geom_point()+
+  geom_line()+
+  facet_grid(~met_neigh_meret)+
+  scale_x_continuous(breaks=1:11, labels = c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))+
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+
+
 
