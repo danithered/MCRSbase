@@ -72,21 +72,26 @@ ggsave("/home/danielred/data/alma/andrasnak/2026_02_24/random.png", width=10, he
 
 
 
-fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/OUT") |>
+fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
   grep("metacentrum", x=_, value=T)|>
   grep("job_info", x=_, value=T, invert=T)
-fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
-  grep("stest8b.1_", x=_, value=T) |>
-  grep("_output_", x=_, value=T, invert=T) 
+
+dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
+  grep("sim", x=_, value=T) |>
+  append(fns) -> fns
+
+# fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
+#   grep("stest8b.1_", x=_, value=T) |>
+#   grep("_output_", x=_, value=T, invert=T) 
   
 # fn <- "stest8.1_11"
 sims <- data.frame()
 
 for(fn in fns)
 {
-files <- dir(paste0("/home/danielred/data/programs/MCRSbase/OUT/OUT/", fn))
+files <- dir(paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn))
 files <- files[files != "save"]
-url <- paste0("/home/danielred/data/programs/MCRSbase/OUT/OUT/", fn, "/", grep("_matrix.data", files, invert=T, value=T))
+url <- paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn, "/", grep("_matrix.data", files, invert=T, value=T))
 
 comment <- grep("#",readLines(url), fixed=T, value=T)
 comment |>
@@ -126,15 +131,36 @@ str(sims)
 apply(sims, 2, unique)
 
 
+rescaleFact2cont <- function(x){
+  as.numeric(droplevels(x))
+}
+
+neigh_map <- c("8"="S=25", "16"="S=49", "32"="S=101", "1"="S=5")
+
+
 sims |>
   filter(repl_neigh_meret==16, phalal==0.0001)|>
-  # mutate(modszer=replace_values(modszer, from=1:11, to =c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))) |>
+  mutate(modszer=factor(modszer, levels=1:11, labels =c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))) |>
   pivot_longer(starts_with("T", ignore.case = F), names_to = "type", values_to = "replicator_count")|>
-  ggplot(aes(x=modszer, y=replicator_count, color=type))+
-  geom_point()+
-  geom_line()+
-  facet_grid(~met_neigh_meret)+
-  scale_x_continuous(breaks=1:11, labels = c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))+
+  ggplot()+
+  geom_point(aes(x=modszer, y=replicator_count, color=type))+
+  geom_line(aes(x=rescaleFact2cont(modszer), y=replicator_count, color=type))+
+  facet_grid(~neigh_map[as.character(met_neigh_meret)])+
+  # scale_x_continuous(breaks=1:11, labels = c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))+
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+
+
+sims |>
+  filter(repl_neigh_meret==16, phalal==0.0001)|>
+  mutate(modszer=factor(modszer, levels=1:11, labels =c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))) |>
+  pivot_longer(starts_with("T", ignore.case = F), names_to = "type", values_to = "replicator_count")|>
+  group_by(fn) |>
+  mutate(rel_freq=replicator_count/sum(replicator_count)) |>
+  ggplot()+
+  geom_point(aes(x=modszer, y=rel_freq, color=type))+
+  geom_line(aes(x=rescaleFact2cont(modszer), y=rel_freq, color=type))+
+  facet_grid(~neigh_map[as.character(met_neigh_meret)])+
+  # scale_x_continuous(breaks=1:11, labels = c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))+
   theme(axis.text.x = element_text(angle=45, hjust=1))
 
 
