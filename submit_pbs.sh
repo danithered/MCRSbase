@@ -17,5 +17,5 @@ make
 mkdir -p "${outdirect}"
 
 # submit
-qsub -J 1-${n} -v INFILE="${infile}",SID="${simid}" -N "${simid}" start_pbs.sh
+qsub -J 1-${n} -v INFILE="${infile}",SIMID="${simid}" -N "${simid}" start_pbs.sh
 
