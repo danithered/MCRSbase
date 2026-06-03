@@ -2,7 +2,8 @@
 
 # reserve 1 CPU, 1 GB disc space and 1 GB RAM
 #PBS -l select=1:ncpus=1:mem=1gb:scratch_local=1gb  
-#PBS -l walltime=24:00:00
+#PBS -l walltime=48:00:00
+#PBS -m ae
 
 # define input/output file
 infile=${INFILE}
@@ -38,9 +39,9 @@ echo -e "${PBS_JOBID} finished at `date`\n" >> ${infofile}
 
 # copy the outputs back to where qsub was called
 cp "${infofile}" "${PBS_O_WORKDIR}/"
-cp -r "${outdirect}/*" "${PBS_O_WORKDIR}/${outdirect}/"
+cp -r "${outdirect}/." "${PBS_O_WORKDIR}/${outdirect}/"
 #cp -r "${outdirect}/${simulationID}" "${PBS_O_WORKDIR}/${outdirect}/"
 
 # apply a scratch automatic cleanup utility
-clean_scratch
+#clean_scratch
 
