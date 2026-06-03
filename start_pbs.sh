@@ -6,10 +6,17 @@
 #PBS -m ae
 
 # define input/output file
-infile=${INFILE}
-simulationID=${SIMID}_${PBS_ARRAY_INDEX}
 outdirect=OUT
 indirect=IN
+infile=${INFILE}
+
+baseID="${SIMID}_${PBS_ARRAY_INDEX}"
+simulationID="${baseID}"
+counter=1
+while [ -d "${outdirect}/${simulationID}" ]; do
+    simulationID="${baseID}_r${counter}"
+    counter=$((counter + 1))
+done
 
 # name a job info file
 infofile=${outdirect}/job_info.${PBS_JOBID}
