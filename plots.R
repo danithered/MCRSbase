@@ -80,6 +80,10 @@ dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
   grep("sim", x=_, value=T) |>
   append(fns) -> fns
 
+dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
+  grep("mcrs3", x=_, value=T) |>
+  append(fns) -> fns
+
 # fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
 #   grep("stest8b.1_", x=_, value=T) |>
 #   grep("_output_", x=_, value=T, invert=T) 
@@ -151,7 +155,7 @@ sims |>
 
 
 sims |>
-  filter(repl_neigh_meret==16, phalal==0.0001)|>
+  filter(repl_neigh_meret==16, phalal==0.0001, claimEmpty==0.001)|>
   mutate(modszer=factor(modszer, levels=1:11, labels =c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))) |>
   pivot_longer(starts_with("T", ignore.case = F), names_to = "type", values_to = "replicator_count")|>
   group_by(fn) |>

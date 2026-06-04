@@ -139,6 +139,8 @@ double maxMet(unsigned int size_met, int method) {
 			}
 		// antifitness
 		case 11:
+			int x = size_met / NOEA, remainder = size_met % NOEA;
+			return( pow(x * (NOEA-remainder) + (x+1) * remainder, (double) antifitness_arg ) );
 			fprintf(stderr, "Not implemented\n");
 
 		default:
@@ -276,8 +278,10 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
 				metab_f *= (double) *(enzimsum_f+enzakt_f);
 			}
 	
-			metab_f=pow(metab_f, antifitness_arg);
-			metab_f /= maxMet(szomsz_cellaszam_f, method_f); // divide by the maximum possible value to scale to 1
+			if(metab_f > 0.0){
+				metab_f=pow(metab_f, antifitness_arg);
+				metab_f /= maxMet(szomsz_cellaszam_f, method_f); // divide by the maximum possible value to scale to 1
+			}
 			break;
 	}
 	
