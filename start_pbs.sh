@@ -18,6 +18,9 @@ while [ -d "${outdirect}/${simulationID}" ]; do
     counter=$((counter + 1))
 done
 
+# Uncomment below, if you are running simulations with the same simID -> jobID will be used as dir name
+#simulationID=${PBS_JOBID}
+
 # name a job info file
 infofile=${outdirect}/job_info.${PBS_JOBID}
 

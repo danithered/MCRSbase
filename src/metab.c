@@ -139,10 +139,10 @@ double maxMet(unsigned int size_met, int method) {
 			}
 		// antifitness
 		case 11:
+			{
 			int x = size_met / NOEA, remainder = size_met % NOEA;
 			return( pow(x * (NOEA-remainder) + (x+1) * remainder, (double) antifitness_arg ) );
-			fprintf(stderr, "Not implemented\n");
-
+			}
 		default:
 			fprintf(stderr, "Method %d is not compatible for maximum counting\n", method);
 	}
