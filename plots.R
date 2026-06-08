@@ -89,39 +89,54 @@ dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
 #   grep("_output_", x=_, value=T, invert=T) 
   
 # fn <- "stest8.1_11"
+n_sample = 10
+plotit=TRUE
 sims <- data.frame()
 
 for(fn in fns)
 {
-files <- dir(paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn))
-files <- files[files != "save"]
-url <- paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn, "/", grep("_matrix.data", files, invert=T, value=T))
-
-comment <- grep("#",readLines(url), fixed=T, value=T)
-comment |>
-  gsub("# ", "", x=_) |>
-  strsplit(" ", fixed=T) |>
-  unlist() |>
-  strsplit("=") -> comment
-ns <- lapply(comment, function(x) x[1]) 
-comment <- lapply(comment, function(x) {
-  ifelse(is.na(as.numeric(x[2])), x[2], as.numeric(x[2]))
-}) 
-names(comment) <- ns
-
-df <- read.table(url, header=T) 
-df |>
-  pivot_longer(!time) |>
-  ggplot()+
-  geom_line(aes(x=time, y=value, color=name))+
-  labs(title = fn, 
-       # tag = paste(names(comment), comment, sep="=", collapse="\n") 
-       tag = paste(names(comment[c("phalal", "claimEmpty", "modszer", "met_neigh_meret", "repl_neigh_meret")]), comment[c("phalal", "claimEmpty", "modszer", "met_neigh_meret", "repl_neigh_meret")], sep="=", collapse="\n") 
-       )+
-  theme(plot.tag.location = "panel", plot.tag = element_text(hjust=0)) -> tp
-  print(tp)
-
-sims <- rbind(sims, cbind(fn=fn, as.data.frame(comment), df[nrow(df),c("time", "empty", grep("T", names(df), value=T))]))
+  files <- dir(paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn))
+  files <- files[files != "save"]
+  url <- paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn, "/", grep("_matrix.data", files, invert=T, value=T))
+  
+  comment <- grep("#",readLines(url), fixed=T, value=T)
+  comment |>
+    gsub("# ", "", x=_) |>
+    strsplit(" ", fixed=T) |>
+    unlist() |>
+    strsplit("=") -> comment
+  ns <- lapply(comment, function(x) x[1]) 
+  comment <- lapply(comment, function(x) {
+    ifelse(is.na(as.numeric(x[2])), x[2], as.numeric(x[2]))
+  }) 
+  names(comment) <- ns
+  
+  df <- read.table(url, header=T) 
+  
+  lasts <- df[(-n_sample+1):0+nrow(df), ]
+  stable = all(apply(lasts[, grep("T", names(df), value=T)], 2, function(x) var(x)/mean(x) ) < 0.1)
+  sims <- rbind(sims, 
+                cbind(
+                  fn=fn, 
+                  as.data.frame(comment), 
+                  time = df[nrow(df), "time"], 
+                  as.data.frame(as.list(apply(lasts[,c("empty", grep("T", names(df), value=T))], 2, mean))),
+                  stable = stable
+                  )
+                )
+  if(plotit){
+    df |>
+      pivot_longer(!time) |>
+      ggplot()+
+      geom_line(aes(x=time, y=value, color=name))+
+      labs(title = fn, 
+           caption=stable,
+           # tag = paste(names(comment), comment, sep="=", collapse="\n") 
+           tag = paste(names(comment[c("phalal", "claimEmpty", "modszer", "met_neigh_meret", "repl_neigh_meret")]), comment[c("phalal", "claimEmpty", "modszer", "met_neigh_meret", "repl_neigh_meret")], sep="=", collapse="\n") 
+      )+
+      theme(plot.tag.location = "panel", plot.tag = element_text(hjust=0)) -> tp
+    print(tp)
+  }
 }
 
 ggplot(sims)+
@@ -139,17 +154,17 @@ rescaleFact2cont <- function(x){
   as.numeric(droplevels(x))
 }
 
-neigh_map <- c("8"="S=25", "16"="S=49", "32"="S=101", "1"="S=5")
+neigh_map <- c("1"="S=5", "8"="S=25", "16"="S=49", "32"="S=101")
 
 
 sims |>
-  filter(repl_neigh_meret==16, phalal==0.0001)|>
+  filter(repl_neigh_meret==16, phalal==0.0001, stable)|>
   mutate(modszer=factor(modszer, levels=1:11, labels =c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))) |>
   pivot_longer(starts_with("T", ignore.case = F), names_to = "type", values_to = "replicator_count")|>
   ggplot()+
   geom_point(aes(x=modszer, y=replicator_count, color=type))+
   geom_line(aes(x=rescaleFact2cont(modszer), y=replicator_count, color=type))+
-  facet_grid(~neigh_map[as.character(met_neigh_meret)])+
+  facet_grid(~factor(as.character(met_neigh_meret), levels=names(neigh_map), labels = neigh_map ))+
   # scale_x_continuous(breaks=1:11, labels = c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))+
   theme(axis.text.x = element_text(angle=45, hjust=1))
 
@@ -163,9 +178,69 @@ sims |>
   ggplot()+
   geom_point(aes(x=modszer, y=rel_freq, color=type))+
   geom_line(aes(x=rescaleFact2cont(modszer), y=rel_freq, color=type))+
-  facet_grid(~neigh_map[as.character(met_neigh_meret)])+
+  facet_grid(~factor(as.character(met_neigh_meret), levels=names(neigh_map), labels = neigh_map ))+
   # scale_x_continuous(breaks=1:11, labels = c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))+
   theme(axis.text.x = element_text(angle=45, hjust=1))
 
 
+#### antifitness ####
 
+fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
+  grep("mcrsA", x=_, value=T)
+  # grep("mcrsmap", x=_, value=T)
+
+n_sample = 10
+sims <- data.frame()
+
+for(fn in fns)
+{
+  files <- dir(paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn))
+  files <- files[files != "save"]
+  url <- paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn, "/", grep("_matrix.data", files, invert=T, value=T))
+  
+  comment <- grep("#",readLines(url), fixed=T, value=T)
+  comment |>
+    gsub("# ", "", x=_) |>
+    strsplit(" ", fixed=T) |>
+    unlist() |>
+    strsplit("=") -> comment
+  ns <- lapply(comment, function(x) x[1]) 
+  comment <- lapply(comment, function(x) {
+    ifelse(is.na(as.numeric(x[2])), x[2], as.numeric(x[2]))
+  }) 
+  names(comment) <- ns
+  
+  df <- read.table(url, header=T) 
+  lasts <- df[(-n_sample+1):0+nrow(df), ]
+  stable = all(apply(lasts[, grep("T", names(df), value=T)], 2, function(x) var(x)/mean(x) ) < 0.1)
+  sims <- rbind(sims, 
+                cbind(
+                  fn=fn, 
+                  as.data.frame(comment), 
+                  time = df[nrow(df), "time"], 
+                  as.data.frame(as.list(apply(lasts[,c("empty", grep("T", names(df), value=T))], 2, mean))),
+                  stable = stable
+                )
+  )
+  if(plotit){
+    df |>
+      pivot_longer(!time) |>
+      ggplot()+
+      geom_line(aes(x=time, y=value, color=name))+
+      labs(title = fn, 
+           # tag = paste(names(comment), comment, sep="=", collapse="\n") 
+           tag = paste(names(comment[c("phalal", "claimEmpty", "modszer", "met_neigh_meret", "repl_neigh_meret")]), comment[c("phalal", "claimEmpty", "modszer", "met_neigh_meret", "repl_neigh_meret")], sep="=", collapse="\n") 
+      )+
+      theme(plot.tag.location = "panel", plot.tag = element_text(hjust=0)) -> tp
+    print(tp)
+  }
+}
+
+sims |>
+  filter(repl_neigh_meret==16, phalal==0.0001, stable)|>
+  mutate(modszer=factor(modszer, levels=1:11, labels =c("geom mean", "minimum", "harmonic mean", "flat", "random uniform", "Linear flux", "Monod", "geom mean maximized to 1", "minimum maximized to 1", "linear flux maximized to 1", "antifitness maximized to 1"))) |>
+  pivot_longer(starts_with("T", ignore.case = F), names_to = "type", values_to = "replicator_count")|>
+  ggplot()+
+  geom_point(aes(x=antifitness, y=replicator_count, color=type))+
+  geom_line(aes(x=antifitness, y=replicator_count, color=type))+
+  facet_grid(~factor(as.character(met_neigh_meret), levels=names(neigh_map), labels = neigh_map ))

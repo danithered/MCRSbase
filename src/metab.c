@@ -125,7 +125,10 @@ double maxMet(unsigned int size_met, int method) {
 		case 8: 
 			{
 			int x = size_met / NOEA, remainder = size_met % NOEA;
-			return( pow(x * (NOEA-remainder) + (x+1) * remainder, 1.0/(double) NOEA) );
+			return( pow( 
+					pow((double)x, (double)(NOEA-remainder)) * 
+					pow((double)(x+1), (double) remainder),
+				1.0/(double) NOEA) );
 			}
 		// minimum
 		case 2:
@@ -135,13 +138,16 @@ double maxMet(unsigned int size_met, int method) {
 		case 10:
 			{
 			int x = size_met / NOEA, remainder = size_met % NOEA;
-			return( 1 / ( 1/x * (NOEA-remainder) + 1/(x+1) * remainder ) );
+			return( NOEA * NOEA / ( 1/x * (NOEA-remainder) + 1/(x+1) * remainder ) / size_met );
 			}
 		// antifitness
 		case 11:
 			{
 			int x = size_met / NOEA, remainder = size_met % NOEA;
-			return( pow(x * (NOEA-remainder) + (x+1) * remainder, (double) antifitness_arg ) );
+			return( pow(
+					pow( (double)x, (double)(NOEA-remainder)) *
+					pow( (double)(x+1), (double) remainder),
+				(double) antifitness_arg ) );
 			}
 		default:
 			fprintf(stderr, "Method %d is not compatible for maximum counting\n", method);
