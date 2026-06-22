@@ -5,16 +5,16 @@
 ############################################################
 
 repeats=1
-ncol=1000
-ciklusszam=300000
+ncol=300
+ciklusszam=100000
 met_neigh_meret=(8 16 32)
-repl_neigh_meret=16
-phalal=0.0001
-claimEmpty=0.001
-diffuzioGyak=(0)
+repl_neigh_meret=1
+phalal=0.1
+claimEmpty=0.1
+diffuzioGyak=3
 mintavetel_gyak=10
-matrixkiiratas_gyak=5000
-modszer=(7 9 10) # 1: geom mean, 2: minimum, 3: harmonic mean, 4: flat (if any is 0, M=0, else M=1), 5: random uniform U(0,2), 6: Linear flux, 7: Monod, 8: geom mean maximized to 1, 9: minimum maximized to 1, 10: linear flux maximized to 1, 11: antifitness maximized to 1
+matrixkiiratas_gyak=100000
+modszer=(4 7 8 9 10) # 1: geom mean, 2: minimum, 3: harmonic mean, 4: flat (if any is 0, M=0, else M=1), 5: random uniform U(0,2), 6: Linear flux, 7: Monod, 8: geom mean maximized to 1, 9: minimum maximized to 1, 10: linear flux maximized to 1, 11: antifitness maximized to 1
 noEA=4 # not a vector! If you change this, you have to comment in/out the line nested deep in the for loops!
 antifitness=0.0 # you can make it a vector as well
 

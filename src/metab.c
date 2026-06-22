@@ -129,7 +129,7 @@ double maxMet(unsigned int size_met, int method) {
 		// minimum
 		case 2:
 		case 9:
-			return( (double) (size_met / NOEA) );
+			return( (double) size_met / (double) NOEA );
 		// linear flux
 		case 10:
 			{

@@ -1,8 +1,8 @@
 PROGINAME = mcrs
 IDIR =./include
 CC=gcc
-#CFLAGS=-I$(IDIR) `pkg-config --cflags --libs gsl`
-CFLAGS=-I$(IDIR) `pkg-config --cflags --libs gsl` -ggdb -fexceptions -Wall -pg # for testing
+CFLAGS=-I$(IDIR) `pkg-config --cflags --libs gsl`
+#CFLAGS=-I$(IDIR) `pkg-config --cflags --libs gsl` -ggdb -fexceptions -Wall -pg # for testing
 
 ODIR=./src/obj
 LDIR =./lib

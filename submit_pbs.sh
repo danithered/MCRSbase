@@ -2,8 +2,8 @@
 
 indirect=IN
 outdirect=OUT
-simid=mcrs2
-infile=param
+simid=mcrsmap5
+infile=paramM5
 
 # count simulations
 n=$(($(wc -l < "${indirect}/${infile}") - 1))

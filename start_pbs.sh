@@ -2,7 +2,7 @@
 
 # reserve 1 CPU, 1 GB disc space and 1 GB RAM
 #PBS -l select=1:ncpus=1:mem=1gb:scratch_local=1gb  
-#PBS -l walltime=48:00:00
+#PBS -l walltime=60:00:00
 #PBS -m ae
 
 # define input/output file
