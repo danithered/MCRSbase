@@ -237,6 +237,7 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
 			break;
 		// 7: Monod
 		case 7:
+			{
 			double w_max = 1.0;
 			double K_R = 0.5 * no_met_neigh / NOEA; 
 			metab_f = w_max;
@@ -246,6 +247,7 @@ double metabolizmus(int *matrix_f, int *met_szomszedsag_f, int method_f, int szo
 				metab_f *= nR / (K_R + nR);
 			}
 			break;
+			}
 		// 8: geom mean maximized to 1
 		case 8:
 			metab_f =1;
