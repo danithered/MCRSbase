@@ -84,10 +84,10 @@ dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
   grep("mcrs3", x=_, value=T) |>
   append(fns) -> fns
 
-# fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
-#   grep("stest8b.1_", x=_, value=T) |>
-#   grep("_output_", x=_, value=T, invert=T) 
-  
+fns <- dir("/home/danielred/data/programs/MCRSbase/OUT/") |>
+  grep("mcrsmap5_", x=_, value=T) |>
+  grep("_output_", x=_, value=T, invert=T)
+
 # fn <- "stest8.1_11"
 n_sample = 10
 plotit=TRUE
@@ -98,6 +98,19 @@ for(fn in fns)
   files <- dir(paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn))
   files <- files[files != "save"]
   url <- paste0("/home/danielred/data/programs/MCRSbase/OUT/", fn, "/", grep("_matrix.data", files, invert=T, value=T))
+  
+  read <- F
+  tryCatch( 
+    {
+      df <- read.table(url, header=T)
+      read=T
+    }, 
+    error = function(e) {
+      warning(paste("Could not read table", url, ":", e))
+      }
+    )
+  
+  if(!read) next
   
   comment <- grep("#",readLines(url), fixed=T, value=T)
   comment |>
@@ -111,9 +124,8 @@ for(fn in fns)
   }) 
   names(comment) <- ns
   
-  df <- read.table(url, header=T) 
-  
-  lasts <- df[(-n_sample+1):0+nrow(df), ]
+  n_s <- min(n_sample, nrow(df))
+  lasts <- df[(-n_s+1):0+nrow(df), ]
   stable = all(apply(lasts[, grep("T", names(df), value=T)], 2, function(x) var(x)/mean(x) ) < 0.1)
   sims <- rbind(sims, 
                 cbind(
@@ -139,6 +151,14 @@ for(fn in fns)
   }
 }
 
+# occupancy stat
+sims |>
+  select(starts_with("T", ignore.case=F)) |>
+  apply(1, sum) -> sums
+sims$occupied <- sums/(sums+sims$empty) 
+sims$alive <- sims$occupied > 0.1
+
+# plot
 ggplot(sims)+
   geom_point(aes(x=(met_neigh_meret), y=empty, color=(k_4), size=time), position = position_jitter(width=1) )+
   facet_grid(phalal~paste("repl", repl_neigh_meret))+
@@ -154,7 +174,7 @@ rescaleFact2cont <- function(x){
   as.numeric(droplevels(x))
 }
 
-neigh_map <- c("1"="S=5", "8"="S=25", "16"="S=49", "32"="S=101")
+neigh_map <- c("1"="S=5", "2"="S=9", "4"="S=13", "5"="S=21", "8"="S=25", "16"="S=49", "20"="S=69", "32"="S=101")
 
 
 sims |>
