@@ -5,6 +5,13 @@
 #PBS -l walltime=60:00:00
 #PBS -m ae
 
+# load the modules
+source /etc/profile
+
+module purge
+module load gcc
+module load gsl/2.5-gcc-10.2.1-jeumekk
+
 # define input/output file
 outdirect=OUT
 indirect=IN
@@ -39,6 +46,18 @@ touch "${infofile}"
 # save a basic info about the job 
 echo -e "$PBS_JOBID (${simulationID}) starting at `date` from user ${USER}\n" >> ${infofile}
 echo -e "$PBS_JOBID is running on node `hostname -f` in a scratch directory ${SCRATCHDIR}\n" >> ${infofile}
+
+# echo "=== HOST ==="
+# hostname -f
+# echo "=== MODULES ==="
+# module list
+# echo "=== LDD ==="
+# ldd "${SCRATCHDIR}/mcrs"
+# echo "=== GSL FILES ==="
+# which gsl-config
+# gsl-config --version
+# echo $LD_LIBRARY_PATH
+# find $(echo $LD_LIBRARY_PATH | tr ':' '\n') -name 'libgsl.so*' 2>/dev/null
 
 # execute simulation
 params=$(sed "$((PBS_ARRAY_INDEX+1))q;d" $indirect/$infile)

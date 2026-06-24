@@ -2,17 +2,18 @@
 
 indirect=IN
 outdirect=OUT
-simid=mcrs6
+simid=mcrs7_2
 infile=param
 
 # count simulations
 n=$(($(wc -l < "${indirect}/${infile}") - 1))
 
 # load the modules
-module load gsl
 module load gcc
+module load gsl/2.5-gcc-10.2.1-jeumekk
 
 # compile
+make clean
 make
 mkdir -p "${outdirect}"
 
