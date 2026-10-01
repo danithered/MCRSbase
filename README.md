@@ -1,6 +1,6 @@
 # General description
 
-This repository contains a basic implementation of the Metabolically Coupled Replicator Systems model (Czárán & Szathmáry, 2000)[https://www.academia.edu/download/46088678/Coexistence_of_metabolically_co-operatin20160531-13532-1y4jzbp.pdf], (Czárán et al., 2015)[https://doi.org/10.1016/j.jtbi.2015.06.002]. The main difference to the Czárán & Szatmáry 2000 article is that in this program the size of metabolic / replicator neighbourhoods can be manually set and the function that calculates the efficiency of the local metabolism can be switched as well (see details below). For a detailed description of the model see the original articles.
+This repository contains a basic implementation of the Metabolically Coupled Replicator Systems model [(Czárán & Szathmáry, 2000)](https://www.academia.edu/download/46088678/Coexistence_of_metabolically_co-operatin20160531-13532-1y4jzbp.pdf), [(Czárán et al., 2015)](https://doi.org/10.1016/j.jtbi.2015.06.002). The main difference to the Czárán & Szatmáry 2000 article is that in this program the size of metabolic / replicator neighbourhoods can be manually set and the function that calculates the efficiency of the local metabolism can be switched as well (see details below). For a detailed description of the model see the original articles.
 
 # Install dependencies
 
