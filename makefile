@@ -16,9 +16,6 @@ DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 _OBJ = main.o szomszed.o torus.o konzolra.o feltoltes.o kimenet.o eszkozok.o metab.o diffuzio.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-_OBJ2 = test.o
-OBJ2 = $(patsubst %,$(ODIR)/%,$(_OBJ2))
-
 $(ODIR)/%.o: $(SRCDIR)/%.c $(DEPS) | $(ODIR)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
@@ -28,27 +25,12 @@ $(PROGINAME): $(OBJ)
 $(ODIR):
 	mkdir -p $(ODIR)
 
-	
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*.o *~ $(PROGINAME) test
+	rm -f $(ODIR)/*.o *~ $(PROGINAME) 
 
-.PHONY: test
-	
-test: $(OBJ2)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
-
-	
 .PHONY: wall
 wall: $(OBJ)
 	$(CC) -o $(PROGINAME) $^ $(CFLAGS) $(LIBS) -Wall
 	
-.PHONY: run
-run: 
-	rm -f ./OUT/testrun/*.*
-	rm -f ./OUT/testrun/save/*.*
-	#./$(PROGINAME) 6 5 0 0 0.1 0.1 0.03 1 1 1 0.15 0.2 0.2 0.2 2 1.5 1.5 1.6 testrun
-	./$(PROGINAME) 300 10000 1 0 0.2 2.0 100 1 100 1 3 0.125 0.125 0.125 0.125 8.0 2.0 4.0 6.0 testrun
-	#300 100 1 0 0.2 2.0 1 1 100 5 3 0.125 0.125 0.125 0.125 8.0 2.0 4.0 6.0 testrun17
-

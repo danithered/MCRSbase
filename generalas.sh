@@ -4,21 +4,19 @@
 ######## PARAMETEREK - ezket kell majd varialni ############
 ############################################################
 
-repeats=1
-ncol=1000
-ciklusszam=10000
-met_neigh_meret=(8 16 32)
-repl_neigh_meret=1
-phalal=0.1
-claimEmpty=0.1
-diffuzioGyak=3
-mintavetel_gyak=10
-matrixkiiratas_gyak=5000
-modszer=(4 7 8 9 10) # 1: geom mean, 2: minimum, 3: harmonic mean, 4: flat (if any is 0, M=0, else M=1), 5: random uniform U(0,2), 6: Linear flux, 7: Monod, 8: geom mean maximized to 1, 9: minimum maximized to 1, 10: linear flux maximized to 1, 11: antifitness maximized to 1
-# modszer=11
-noEA=4 # not a vector! If you change this, you have to comment in/out the line nested deep in the for loops!
-# antifitness=(-1.5 -1.0 -0.5 0.0 0.5 1.0) # you can make it a vector as well
-antifitness=0.0
+repeats=1 # number of repeats of the same parameter set
+ncol=1000 # number of columns or rows of the grid. Number of cells = ncol * ncol 
+ciklusszam=10000 # maximal lenght of the simulations
+met_neigh_meret=(8 16 32) # size of the metabolic neighbourhood
+repl_neigh_meret=1 # size of the replicator neighbourhood
+phalal=0.1 # probabilty of degradation
+claimEmpty=0.1 
+diffuzioGyak=3 # frequency of replicator mobility steps
+mintavetel_gyak=10 # time interval of output rows
+matrixkiiratas_gyak=5000 # time interval of saving the whole grid
+modszer=(4 7 8 9 10) # metabolic function applied. 1: geom mean, 2: minimum, 3: harmonic mean, 4: flat (if any is 0, M=0, else M=1), 5: random uniform U(0,2), 6: Linear flux, 7: Monod, 8: geom mean maximized to 1, 9: minimum maximized to 1, 10: linear flux maximized to 1, 11: antifitness maximized to 1
+noEA=4 # not a vector! If you change this, you have to comment in/out the line nested deep in the for loops (look for 2 lines starting with "######")!
+antifitness=0.0 # the antifitness value applied in metabolic function 11
 
 # replication rates
 k_1=1.0
@@ -80,7 +78,7 @@ fi
 touch $direct/$file
 
 
-
+###### comment in the next line if noEA is 2 and comment out the one following it
 # echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer noEA inicEAP inicEA1 inicEA2 kvaluesP kvalues1 kvalues2 >> $direct/$file
 echo ncol ciklusszam met_neigh_meret repl_neigh_meret phalal claimEmpty diffuzioGyak mintavetel_gyak matrixkiiratas_gyak modszer noEA antifitness inicEAP kvaluesP inicEA1 kvalues1 inicEA2 kvalues2 inicEA3 kvalues3 inicEA4 kvalues4 >> $direct/$file
 
@@ -114,6 +112,7 @@ do
 												do
 													for i2 in {1..1}}
 													do
+###### comment in the next line if noEA is 2 and comment out the one following it
 														# echo $ncol $ciklusszam ${m} ${r} $pdeg ${c} ${d} $mintavetel_gyak $matrixkiiratas_gyak ${k} ${noEA} ${af} 0 0 ${i1} ${k1} ${i2} ${k2} >> $direct/$file
 														echo $ncol $ciklusszam ${m} ${r} $pdeg ${c} ${d} $mintavetel_gyak $matrixkiiratas_gyak ${k} ${noEA} ${af} 0 0 ${i_1} ${k1} ${i_2} ${k2} ${i_3} ${k3} ${i_4} ${k4} >> $direct/$file
 													done
